@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zytherion Biovance — Platform Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#08100A;--dark:#0E1710;--dark2:#121D14;--surface:#1A2B1C;--surface2:#223025;
+  --border:#2A3D2C;--border2:#344D38;
+  --green:#22C55E;--green2:#16A34A;--green3:#4ADE80;
+  --purple:#A855F7;--blue:#3B82F6;--teal:#14B8A6;--amber:#F59E0B;--red:#EF4444;
+  --text:#E2F0E5;--text2:#8BAF92;--text3:#506B56;
+}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;font-size:14px;background:var(--black);color:var(--text)}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;animation:fadeIn .3s ease}
+.screen.active{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes spinDrone{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes ping{0%{transform:scale(1);opacity:.8}100%{transform:scale(2.5);opacity:0}}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── SHARED NAV ── */
+.nav{display:flex;align-items:center;gap:10px;padding:12px 20px;background:rgba(8,16,10,.85);border-bottom:1px solid rgba(42,61,44,.6);backdrop-filter:blur(20px);flex-shrink:0;z-index:50;position:relative}
+.nav-back{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);font-size:.85rem;transition:.15s}
+.nav-back:hover{background:rgba(255,255,255,.15)}
+.nav-ai-badge{display:flex;align-items:center;gap:7px;background:rgba(26,43,28,.9);border:1px solid var(--border2);border-radius:20px;padding:5px 12px 5px 6px;cursor:pointer;transition:.2s}
+.nav-ai-badge:hover{border-color:var(--green2)}
+.ai-av{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#15803D,#4ADE80);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;color:var(--black);flex-shrink:0}
+.ai-name{font-size:.78rem;font-weight:700;color:#fff}
+.nav-search{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:8px 16px;font-size:.85rem;color:var(--text);outline:none;font-family:'Inter',sans-serif;cursor:pointer;transition:.2s}
+.nav-search:focus{background:rgba(255,255,255,.08);border-color:rgba(34,197,94,.4)}
+.nav-search::placeholder{color:var(--text3)}
+.nav-srch-btn{width:32px;height:32px;border-radius:50%;background:var(--green2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:.15s;flex-shrink:0}
+.nav-srch-btn:hover{background:var(--green3);transform:scale(1.05)}
+.nav-private{padding:4px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.2);font-size:.68rem;font-weight:700;color:#fff;letter-spacing:.05em;white-space:nowrap}
+.nav-links{display:flex;gap:18px}
+.nav-link{font-size:.8rem;color:var(--text2);cursor:pointer;transition:.15s;white-space:nowrap}
+.nav-link:hover{color:#fff}
+
+/* ── SHARED COMPONENTS ── */
+.card{background:var(--dark2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.ch{padding:11px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ct{font-size:.8rem;font-weight:700;color:#fff}
+.cp{padding:12px}
+.tag{display:inline-flex;font-size:.57rem;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:6px;border:1px solid;white-space:nowrap}
+.tg{color:var(--green);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+.tt{color:var(--teal);border-color:rgba(20,184,166,.3);background:rgba(20,184,166,.08)}
+.ta{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)}
+.tb{color:var(--blue);border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.08)}
+.tr{color:var(--red);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
+.tp{color:var(--purple);border-color:rgba(168,85,247,.3);background:rgba(168,85,247,.08)}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--dark2);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.kpi.g::after{background:var(--green)}.kpi.t::after{background:var(--teal)}.kpi.a::after{background:var(--amber)}.kpi.r::after{background:var(--red)}.kpi.b::after{background:var(--blue)}.kpi.p::after{background:var(--purple)}
+.kpi-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);font-family:'DM Mono',monospace;margin-bottom:6px}
+.kpi-val{font-size:1.6rem;font-weight:800;color:#fff;line-height:1;letter-spacing:-.02em}
+.kpi-d{font-size:.67rem;margin-top:4px}.ku{color:var(--green)}.kd{color:var(--red)}.kn{color:var(--text2)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.g3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.alert-bar{display:flex;align-items:flex-start;gap:8px;padding:10px 13px;border-radius:8px;border:1px solid;margin-bottom:12px;font-size:.75rem;line-height:1.5}
+.aw{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.ar{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.3);color:var(--red)}
+.ai2{background:rgba(59,130,246,.07);border-color:rgba(59,130,246,.3);color:var(--blue)}
+.btn{padding:7px 16px;border-radius:20px;font-size:.75rem;font-weight:700;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:.15s}
+.btn-g{background:var(--green2);color:var(--black)}.btn-g:hover{background:var(--green3)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}.btn-ghost:hover{border-color:var(--green2);color:var(--green3)}
+.btn-purple{background:linear-gradient(135deg,#7C3AED,#A855F7);color:#fff}.btn-purple:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(168,85,247,.4)}
+.btn-white{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}.btn-white:hover{background:rgba(255,255,255,.18)}
+canvas{width:100%!important}
+.flbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:700;margin-bottom:4px}
+.finput{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:8px 11px;color:#fff;font-family:'Inter',sans-serif;font-size:.82rem;outline:none;transition:.15s}
+.finput:focus{border-color:var(--green2)}
+.fld{margin-bottom:12px}
+
+/* ══════════════════════════════════════
+   SCREEN 1 — HOME
+══════════════════════════════════════ */
+#s-main{background:var(--black)}
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.earth-hero{position:fixed;top:-80px;left:50%;transform:translateX(-50%);width:720px;height:520px;z-index:1;pointer-events:none;border-radius:50%;background:radial-gradient(ellipse 60% 55% at 50% 48%,#0A3D2B 0%,#051F10 35%,#020C06 60%,transparent 75%);box-shadow:0 0 140px 70px rgba(22,163,74,.1),0 0 300px 150px rgba(6,40,15,.25)}
+.earth-inner{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:360px;height:360px;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 35% 38%,#0D4A28 0%,#051F10 45%,#020C07 75%,#01060A 100%);box-shadow:inset -25px -15px 50px rgba(0,0,0,.8),inset 8px 8px 35px rgba(22,163,74,.12)}
+.earth-glow{position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:480px;height:180px;background:radial-gradient(ellipse,rgba(74,222,128,.06) 0%,transparent 70%)}
+.continent{position:absolute;background:rgba(34,197,94,.12);border-radius:40%}
+.hero-scroll{position:relative;z-index:10;flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:24px 20px 40px}
+.hero-title{font-size:clamp(2.6rem,5.5vw,4.8rem);font-weight:900;text-align:center;line-height:1;letter-spacing:-.03em;color:#fff;text-shadow:0 0 80px rgba(74,222,128,.25);animation:slideUp .6s ease}
+.hero-sub{font-size:clamp(1.3rem,2.8vw,2rem);font-weight:300;color:rgba(255,255,255,.65);text-align:center;margin-top:5px;letter-spacing:-.01em;animation:slideUp .7s ease}
+.vision-card{background:rgba(18,29,20,.88);border:1px solid rgba(42,61,44,.8);border-radius:16px;padding:28px;max-width:820px;width:100%;margin-top:24px;backdrop-filter:blur(12px);animation:slideUp .8s ease}
+.vision-title{font-size:1.2rem;font-weight:700;color:#fff;text-align:center;margin-bottom:12px}
+.vision-body{font-size:.87rem;color:var(--text2);text-align:center;line-height:1.75;max-width:660px;margin:0 auto}
+.vstats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:10px;overflow:hidden;margin-top:20px}
+.vstat{background:rgba(14,23,16,.95);padding:16px;text-align:center}
+.vstat-val{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+.vc-blue{color:var(--blue)}.vc-green{color:var(--green)}.vc-purple{color:var(--purple)}
+.vstat-label{font-size:.68rem;color:var(--text2);margin-top:3px}
+.hero-btns{display:flex;gap:10px;margin-top:22px;animation:slideUp .9s ease;flex-wrap:wrap;justify-content:center}
+.hbtn{padding:13px 30px;border-radius:30px;font-size:.88rem;font-weight:700;cursor:pointer;transition:.2s;border:none;font-family:'Inter',sans-serif;letter-spacing:-.01em}
+.ai-section{max-width:860px;width:100%;margin-top:28px;animation:slideUp 1s ease}
+.ai-sec-title{text-align:center;font-size:.7rem;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+.carousel-wrap{position:relative;display:flex;align-items:center;gap:10px}
+.c-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;font-size:1rem}
+.c-btn:hover{background:rgba(255,255,255,.18)}
+.carousel{flex:1;overflow:hidden}
+.c-track{display:flex;gap:10px;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.ai-card{flex-shrink:0;width:200px;border-radius:12px;overflow:hidden;cursor:pointer;transition:.25s;position:relative;border:2px solid transparent}
+.ai-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.18)}
+.ai-card.active{border-color:var(--green)}
+.ai-card-img{width:100%;height:130px;display:flex;align-items:center;justify-content:center;font-size:2.8rem}
+.ai-card-lbl{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);padding:20px 10px 8px;font-size:.8rem;font-weight:700;color:#fff;text-align:center}
+.ai-active-info{text-align:center;margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:7px}
+.ai-active-badge{font-size:.6rem;text-transform:uppercase;letter-spacing:.15em;color:var(--green);border:1px solid var(--green2);padding:2px 10px;border-radius:10px}
+.ai-active-name{font-size:1.7rem;font-weight:900;color:var(--green3);letter-spacing:-.02em}
+.ai-active-desc{font-size:.8rem;color:var(--text2)}
+
+/* ══════════════════════════════════════
+   SCREEN 2 — DNS DISCOVERY
+══════════════════════════════════════ */
+#s-discovery{overflow:hidden}
+.disc-hero{position:relative;height:400px;overflow:hidden;flex-shrink:0}
+.disc-bg{position:absolute;inset:-6%;background-size:cover;background-position:center;transition:opacity .6s ease;animation:kenburns 28s ease-in-out infinite alternate}
+@keyframes kenburns{0%{transform:scale(1) translate(0,0)}50%{transform:scale(1.08) translate(-1.5%,1%)}100%{transform:scale(1.04) translate(1.5%,-1%)}}
+.logo-img{border-radius:50%;object-fit:cover;flex-shrink:0;box-shadow:0 0 14px rgba(34,197,94,.35)}
+.earth-logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:340px;height:340px;border-radius:50%;object-fit:cover;opacity:.92;animation:earthFloat 9s ease-in-out infinite}
+@keyframes earthFloat{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-52%) scale(1.015)}}
+.disc-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.2) 0%,rgba(0,0,0,.5) 55%,rgba(8,16,10,1) 100%)}
+.disc-nav{position:relative;z-index:10;display:flex;align-items:center;padding:14px 22px;gap:14px;background:rgba(255,255,255,.07);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.1)}
+.disc-logo{font-size:.95rem;font-weight:800;color:#fff;cursor:pointer;letter-spacing:.02em}
+.disc-tabs{display:flex;gap:5px}
+.disc-tab{padding:6px 16px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;transition:.15s;border:1px solid transparent;color:rgba(255,255,255,.65)}
+.disc-tab:hover{color:#fff}
+.disc-tab.active{background:rgba(0,0,0,.7);color:#fff;border-color:rgba(255,255,255,.2)}
+.disc-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.safe-lbl{font-size:.75rem;color:rgba(255,255,255,.55)}
+.safe-tog{width:34px;height:18px;background:var(--blue);border-radius:9px;position:relative;cursor:pointer}
+.safe-tog::after{content:'';position:absolute;top:2px;right:2px;width:14px;height:14px;background:#fff;border-radius:50%}
+.disc-center{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);z-index:10;text-align:center;width:100%;max-width:750px;padding:0 22px}
+.disc-htitle{font-size:2.6rem;font-weight:900;color:#fff;margin-bottom:5px;text-shadow:0 2px 20px rgba(0,0,0,.5)}
+.disc-hsub{font-size:.92rem;color:rgba(255,255,255,.72);margin-bottom:18px}
+.disc-sw{position:relative}
+.disc-sinput{width:100%;background:rgba(255,255,255,.95);border:none;border-radius:28px;padding:15px 52px 15px 22px;font-size:.95rem;color:#111;outline:none;font-family:'Inter',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.disc-sico{position:absolute;right:15px;top:50%;transform:translateY(-50%);font-size:1.1rem;cursor:pointer;color:#555}
+.disc-tags{display:flex;justify-content:center;gap:7px;margin-top:11px;flex-wrap:wrap}
+.disc-tag{padding:5px 13px;border-radius:20px;border:1px solid rgba(255,255,255,.28);font-size:.75rem;color:rgba(255,255,255,.75);cursor:pointer;transition:.15s;background:rgba(255,255,255,.08)}
+.disc-tag:hover,.disc-tag.active{background:rgba(255,255,255,.22);color:#fff}
+.disc-hot{display:flex;gap:7px;margin-top:7px;justify-content:center;flex-wrap:wrap}
+.disc-hot span{font-size:.75rem;color:rgba(255,255,255,.55);cursor:pointer}
+.disc-hot span:hover{color:rgba(255,255,255,.85)}
+.disc-hot span.lbl{cursor:default;color:rgba(255,255,255,.35)!important}
+.disc-results{flex:1;overflow-y:auto;background:#fff;display:none}
+.disc-results.show{display:flex}
+.dr-left{flex:1;padding:18px 22px;max-width:680px;border-right:1px solid #eee}
+.dr-right{width:300px;padding:18px 20px;flex-shrink:0}
+.dr-meta{font-size:.78rem;color:#70757a;margin-bottom:8px}
+.dr-filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.rf{padding:5px 13px;border-radius:20px;border:1px solid #dadce0;font-size:.76rem;color:#555;cursor:pointer;background:#fff;transition:.15s}
+.rf.active{background:#000;color:#fff;border-color:#000}
+.ri{margin-bottom:20px}
+.ri-dom{font-size:.76rem;color:#202124;margin-bottom:2px;display:flex;align-items:center;gap:5px}
+.ri-ico{width:16px;height:16px;border-radius:50%;background:#e8f0fe;display:inline-flex;align-items:center;justify-content:center;font-size:.55rem}
+.ri-title{font-size:1rem;color:#1a0dab;cursor:pointer;line-height:1.3;margin-bottom:4px}
+.ri-title:hover{text-decoration:underline}
+.ri-snip{font-size:.83rem;color:#4d5156;line-height:1.55}
+.ri-acts{font-size:.72rem;color:#70757a;margin-top:4px;display:flex;gap:8px}
+.ri-act{cursor:pointer}.ri-act:hover{text-decoration:underline}
+.paa-box{border:1px solid #ddd;border-radius:8px;padding:14px;margin:12px 0}
+.paa-title{font-size:.83rem;font-weight:600;color:#202124;margin-bottom:9px}
+.paa-item{padding:9px 0;border-bottom:1px solid #eee;font-size:.83rem;color:#444;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.paa-item:last-child{border-bottom:none}
+.paa-item:hover{color:#1a0dab}
+.qi-box{background:#f8f9fa;border-radius:12px;overflow:hidden}
+.qi-img{width:100%;height:150px;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+.qi-body{padding:13px}
+.qi-lbl{font-size:.7rem;color:#70757a;margin-bottom:2px}
+.qi-name{font-size:1rem;font-weight:600;color:#202124;margin-bottom:10px}
+.qi-row{font-size:.8rem;color:#444;margin-bottom:5px;display:flex;gap:5px}
+.qi-key{color:#70757a}
+.qi-tabs{display:flex;gap:6px;margin-top:10px}
+.qi-tab{padding:5px 13px;border:1px solid #dadce0;border-radius:20px;font-size:.75rem;color:#444;cursor:pointer;transition:.15s}
+.qi-tab:hover{border-color:#999}
+
+/* ══════════════════════════════════════
+   SCREEN 3 — AI CHAT
+══════════════════════════════════════ */
+#s-chat{background:var(--dark)}
+.chat-nav{display:flex;align-items:center;gap:10px;padding:11px 18px;background:rgba(12,20,13,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);flex-shrink:0}
+.chat-ai-info{display:flex;align-items:center;gap:8px}
+.chat-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#15803D,#4ADE80);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:var(--black);flex-shrink:0}
+.chat-ai-name{font-size:.88rem;font-weight:700;color:#fff}
+.chat-ai-sub{font-size:.67rem;color:var(--green)}
+.chat-status{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--green)}
+.chat-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:9px;animation:slideUp .25s ease}
+.msg.user{flex-direction:row-reverse}
+.msg-av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700}
+.msg-av.ai{background:linear-gradient(135deg,#15803D,#4ADE80);color:var(--black)}
+.msg-av.user{background:linear-gradient(135deg,#2563EB,#60A5FA);color:#fff}
+.msg-bubble{max-width:76%;padding:11px 14px;border-radius:14px;font-size:.84rem;line-height:1.65}
+.msg-bubble.ai{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:4px 14px 14px 14px}
+.msg-bubble.user{background:linear-gradient(135deg,#15803D,#22C55E);color:#fff;border-radius:14px 4px 14px 14px}
+.msg-bubble strong{color:var(--green3)}
+.typing-cursor{display:inline-block;width:2px;height:13px;background:var(--green);animation:blink .8s infinite;vertical-align:text-bottom;margin-left:1px}
+.chat-input-area{padding:14px 18px;border-top:1px solid var(--border);background:var(--dark);flex-shrink:0}
+.chat-sugs{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap}
+.chat-sug{padding:5px 12px;border-radius:20px;border:1px solid var(--border2);font-size:.72rem;color:var(--text2);cursor:pointer;transition:.15s;background:transparent}
+.chat-sug:hover{border-color:var(--green2);color:var(--green3)}
+.chat-iw{display:flex;gap:9px;align-items:flex-end;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:9px 12px}
+.chat-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;resize:none;min-height:22px;max-height:110px}
+.chat-input::placeholder{color:var(--text3)}
+.chat-send{width:30px;height:30px;border-radius:50%;background:var(--green2);border:none;cursor:pointer;color:var(--black);font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s}
+.chat-send:hover{background:var(--green3);transform:scale(1.05)}
+
+/* ══════════════════════════════════════
+   SCREEN 4 — PLATFORM
+══════════════════════════════════════ */
+#s-platform{overflow:hidden}
+.plat-layout{display:grid;grid-template-columns:216px 1fr;height:100%;overflow:hidden}
+.sidebar{background:var(--dark2);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.sb-logo{padding:16px;border-bottom:1px solid var(--border)}
+.sb-logo-txt{font-size:.82rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.04em}
+.sb-logo-txt span{color:var(--green)}
+.sb-live{display:flex;align-items:center;gap:5px;font-size:.6rem;color:var(--green);margin-top:3px;font-family:'DM Mono',monospace}
+.ps-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite;flex-shrink:0}
+.sb-org{padding:10px;border-bottom:1px solid var(--border)}
+.sb-org-card{display:flex;align-items:center;gap:7px;padding:7px 9px;background:var(--surface);border:1px solid var(--border2);border-radius:7px;cursor:pointer}
+.sb-org-name{font-size:.72rem;font-weight:600;color:#fff}
+.sb-org-role{font-size:.6rem;color:var(--text2)}
+.sb-sec{padding:5px 0;border-bottom:1px solid var(--border)}
+.sb-lbl{padding:7px 13px 2px;font-size:.55rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);font-weight:600}
+.sb-item{display:flex;align-items:center;gap:7px;padding:7px 13px;cursor:pointer;font-size:.76rem;color:var(--text2);border-left:2px solid transparent;transition:.12s}
+.sb-item:hover{background:var(--surface);color:var(--text)}
+.sb-item.on{background:rgba(34,197,94,.07);color:var(--green3);border-left-color:var(--green)}
+.sb-ico{font-size:.82rem;width:14px;text-align:center}
+.sb-badge{margin-left:auto;font-size:.56rem;background:rgba(34,197,94,.15);color:var(--green);padding:1px 5px;border-radius:5px;font-family:'DM Mono',monospace}
+.plat-main{display:flex;flex-direction:column;overflow:hidden}
+.plat-topbar{display:flex;align-items:center;padding:0 18px;height:48px;background:var(--dark2);border-bottom:1px solid var(--border);flex-shrink:0;position:sticky;top:0;z-index:10}
+.pt-title{font-size:.92rem;font-weight:700;color:#fff}
+.pt-sub{font-size:.68rem;color:var(--text2);margin-top:1px}
+.pt-right{margin-left:auto;display:flex;gap:7px}
+.plat-page{display:none;padding:18px;animation:fadeIn .2s ease;overflow-y:auto;flex:1}
+.plat-page.on{display:block}
+
+/* FEED */
+.feed-item{display:flex;gap:8px;padding:8px 13px;border-bottom:1px solid var(--border);transition:.1s;cursor:pointer}
+.feed-item:hover{background:var(--surface)}
+.feed-item:last-child{border-bottom:none}
+.fd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.fd-org{font-size:.73rem;font-weight:600;color:#fff}
+.fd-desc{font-size:.68rem;color:var(--text2);line-height:1.4}
+.fd-time{font-size:.58rem;font-family:'DM Mono',monospace;color:var(--text3);white-space:nowrap;margin-left:auto;padding-top:1px}
+
+/* MAP */
+.map-tip{padding:6px 13px;font-size:.67rem;font-family:'DM Mono',monospace;color:var(--green);background:var(--surface);border-top:1px solid var(--border);min-height:26px}
+
+/* PIPELINE */
+.pipeline-wrap{display:flex;align-items:stretch;gap:0;margin-bottom:14px;overflow-x:auto}
+.pipe-node{background:var(--dark2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;min-width:120px;flex-shrink:0;text-align:center;position:relative}
+.pipe-node::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--text3);z-index:2}
+.pipe-node:last-child::after{display:none}
+.pn-ico{font-size:1.3rem;margin-bottom:5px}
+.pn-name{font-size:.72rem;font-weight:700;color:#fff;margin-bottom:2px}
+.pn-tech{font-size:.6rem;color:var(--text2);font-family:'DM Mono',monospace}
+.pn-lat{font-size:.58rem;color:var(--green);margin-top:4px;font-family:'DM Mono',monospace}
+.pipe-sep{width:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:1rem}
+.channel-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.ch-card{background:var(--dark2);border:1px solid var(--border);border-radius:9px;padding:12px;cursor:pointer;transition:.15s}
+.ch-card:hover{border-color:var(--border2);background:var(--surface)}
+.ch-ico{font-size:1.4rem;margin-bottom:6px}
+.ch-name{font-size:.75rem;font-weight:700;color:#fff;margin-bottom:3px}
+.ch-desc{font-size:.67rem;color:var(--text2);line-height:1.4}
+.ch-badge{margin-top:6px;font-size:.6rem;font-family:'DM Mono',monospace;color:var(--green)}
+
+/* SATELLITE */
+.sat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.sat-card{background:var(--dark2);border:1px solid var(--border);border-radius:9px;padding:12px;position:relative;overflow:hidden}
+.sat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sat-card.live::before{background:var(--green)}.sat-card.ok::before{background:var(--teal)}.sat-card.pending::before{background:var(--amber)}
+.sat-name{font-size:.78rem;font-weight:700;color:#fff;margin-bottom:2px}
+.sat-agency{font-size:.63rem;color:var(--text2);margin-bottom:6px}
+.sat-status{display:flex;align-items:center;gap:4px;font-size:.62rem;font-family:'DM Mono',monospace}
+.sat-dot{width:5px;height:5px;border-radius:50%}
+.live .sat-dot{background:var(--green)}.ok .sat-dot{background:var(--teal)}.pending .sat-dot{background:var(--amber)}
+.sat-stat-val{font-size:.67rem;color:var(--text2);margin-top:5px}
+
+/* SAFARI */
+.safari-wrap{display:grid;grid-template-columns:1fr 300px;gap:10px;margin-bottom:10px}
+.drone-view{background:#000;border-radius:10px;overflow:hidden;position:relative;aspect-ratio:16/9;border:1px solid var(--border)}
+.drone-bg{width:100%;height:100%;background:linear-gradient(160deg,#0A2010 0%,#142C0A 40%,#0D1F07 70%,#0A1505 100%);position:relative;overflow:hidden}
+.drone-bg::before{content:'🌿';position:absolute;top:20%;left:15%;font-size:2rem;opacity:.4}
+.drone-bg::after{content:'🦁';position:absolute;top:35%;left:45%;font-size:1.5rem;opacity:.7;animation:slideUp 3s ease infinite alternate}
+.hud{position:absolute;inset:0;pointer-events:none}
+.hud-tl{position:absolute;top:10px;left:10px;font-family:'DM Mono',monospace;font-size:.6rem;color:#00FF88;text-shadow:0 0 6px #00FF88}
+.hud-tr{position:absolute;top:10px;right:10px;font-family:'DM Mono',monospace;font-size:.6rem;color:#00FF88;text-align:right;text-shadow:0 0 6px #00FF88}
+.hud-bl{position:absolute;bottom:10px;left:10px;font-family:'DM Mono',monospace;font-size:.58rem;color:#00FF88;text-shadow:0 0 6px #00FF88}
+.hud-br{position:absolute;bottom:10px;right:10px;font-family:'DM Mono',monospace;font-size:.58rem;color:#00FF88;text-align:right;text-shadow:0 0 6px #00FF88}
+.live-badge{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:6px;letter-spacing:.05em;display:flex;align-items:center;gap:4px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
+.drone-ico{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.8rem;z-index:2}
+.ping-ring{position:absolute;top:50%;left:50%;width:40px;height:40px;border:2px solid var(--green);border-radius:50%;transform:translate(-50%,-50%);animation:ping 1.8s infinite}
+.safari-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start}
+.ss-card{background:var(--dark2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.ss-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);font-family:'DM Mono',monospace}
+.ss-val{font-size:1.3rem;font-weight:800;color:#fff;margin-top:3px;letter-spacing:-.02em}
+.ss-sub{font-size:.62rem;color:var(--green)}
+.species-log{background:var(--dark2);border:1px solid var(--border);border-radius:9px;margin-top:8px;overflow:hidden}
+
+/* FIELD SYNC */
+.device-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.device-card{background:var(--dark2);border:1px solid var(--border);border-radius:9px;padding:12px}
+.dev-hd{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.dev-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--black);flex-shrink:0}
+.dev-name{font-size:.76rem;font-weight:700;color:#fff}
+.dev-loc{font-size:.63rem;color:var(--text2)}
+.progress-track{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;border-radius:3px;transition:width 1.5s ease}
+.pf-g{background:var(--green)}.pf-b{background:var(--blue)}.pf-a{background:var(--amber)}
+.crdt-log{background:var(--dark2);border:1px solid var(--border);border-radius:9px;overflow:hidden}
+
+/* PERMISSIONS & AUDIT */
+.audit-table{width:100%;border-collapse:collapse}
+.audit-table th{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:600;padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);background:var(--dark2)}
+.audit-table td{font-size:.7rem;color:var(--text2);padding:8px 10px;border-bottom:1px solid var(--border);font-family:'DM Mono',monospace}
+.audit-table td:first-child{color:var(--green3);font-size:.62rem}
+.audit-table tr:hover td{background:rgba(255,255,255,.02)}
+.perm-row{display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--border)}
+.perm-field{font-size:.75rem;font-weight:600;color:#fff;flex:1}
+.perm-type{font-size:.67rem;color:var(--text2)}
+.perm-badge{font-size:.6rem;padding:2px 8px;border-radius:6px;font-weight:700}
+.pb-pub{background:rgba(34,197,94,.12);color:var(--green)}.pb-priv{background:rgba(59,130,246,.12);color:var(--blue)}.pb-rest{background:rgba(245,158,11,.12);color:var(--amber)}
+.qual-row{display:flex;align-items:center;gap:8px;padding:8px 13px;border-bottom:1px solid var(--border)}
+.qual-name{font-size:.73rem;color:#fff;flex:1}
+.qual-track{width:100px;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;flex-shrink:0}
+.qual-fill{height:100%;border-radius:3px}
+.qf-hi{background:var(--green)}.qf-md{background:var(--amber)}.qf-lo{background:var(--red)}
+.qual-score{font-size:.67rem;font-family:'DM Mono',monospace;color:var(--text2);width:32px;text-align:right;flex-shrink:0}
+
+/* TECH STACK */
+.tech-table{width:100%;border-collapse:collapse}
+.tech-table th{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:600;padding:7px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--dark2)}
+.tech-table td{font-size:.76rem;padding:8px 12px;border-bottom:1px solid var(--border)}
+.tech-table td:first-child{color:var(--text2)}.tech-table td:nth-child(2){color:#fff;font-weight:600}
+.tech-table tr:hover td{background:var(--surface)}
+.new-badge{font-size:.52rem;background:rgba(34,197,94,.15);color:var(--green);padding:1px 5px;border-radius:4px;font-weight:700;margin-left:5px;vertical-align:middle}
+.layer-badge{font-size:.55rem;color:var(--text3);font-family:'DM Mono',monospace}
+
+/* COST DASHBOARD */
+.cost-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.cost-card{background:var(--dark2);border:1px solid var(--border);border-radius:9px;padding:12px}
+.cost-service{font-size:.7rem;color:var(--text2);margin-bottom:3px}
+.cost-range{font-size:1rem;font-weight:700;color:#fff;letter-spacing:-.01em}
+.cost-detail{font-size:.62rem;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace}
+.cost-total{background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(20,184,166,.06));border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:14px;text-align:center;margin-bottom:12px}
+.ct-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text2);margin-bottom:5px}
+.ct-val{font-size:1.8rem;font-weight:900;color:var(--green);letter-spacing:-.02em}
+.ct-sub{font-size:.72rem;color:var(--text2);margin-top:3px}
+
+/* COLLAB MESSAGING */
+.msg-panel{background:var(--dark2);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;height:320px}
+.mp-hd{padding:10px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mp-body{flex:1;overflow-y:auto;padding:12px}
+.mp-msg{margin-bottom:10px}
+.mp-sender{font-size:.62rem;color:var(--green);font-weight:700;margin-bottom:2px;font-family:'DM Mono',monospace}
+.mp-txt{font-size:.76rem;color:var(--text);background:var(--surface);border:1px solid var(--border);padding:8px 10px;border-radius:8px;line-height:1.5}
+.mp-time{font-size:.58rem;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace}
+.mp-foot{padding:9px 12px;border-top:1px solid var(--border);display:flex;gap:7px}
+.mp-input{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:6px 13px;font-size:.78rem;color:#fff;outline:none;font-family:'Inter',sans-serif}
+.mp-send{padding:6px 14px;border-radius:20px;background:var(--green2);color:var(--black);border:none;font-size:.72rem;font-weight:700;cursor:pointer}
+
+/* INTELLIGENCE PREDICTIONS */
+.pred-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.pc{background:var(--dark2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.pc-hd{padding:10px 13px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.pc-ttl{font-size:.76rem;font-weight:700;color:#fff;line-height:1.3}
+.conf{font-size:.56rem;font-weight:700;padding:2px 7px;border-radius:6px;border:1px solid;white-space:nowrap;flex-shrink:0}
+.ch2{color:var(--green);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+.cm{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)}
+.cl{color:var(--red);border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
+.pc-body{padding:11px 13px}
+.pm-lbl{font-size:.62rem;color:var(--text2);margin-bottom:4px}
+.pm-track{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.pm-fill{height:100%;border-radius:3px;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+.pm-val{font-size:.67rem;font-family:'DM Mono',monospace;color:var(--text2);margin-bottom:8px}
+.sigs{margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+.sig-hd{font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:4px}
+.sig{display:flex;align-items:center;padding:3px 0;border-bottom:1px solid var(--border)}
+.sig:last-child{border-bottom:none}
+.sn{font-size:.68rem;color:var(--text2);flex:1}
+.sv{font-size:.65rem;font-family:'DM Mono',monospace}
+.up{color:var(--red)}.dn{color:var(--green)}.wn{color:var(--amber)}
+.anom{display:flex;gap:8px;background:var(--dark2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;border-left:3px solid;margin-bottom:7px}
+.anom.crit{border-left-color:var(--red)}.anom.warn{border-left-color:var(--amber)}.anom.info{border-left-color:var(--blue)}
+.at{font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:2px}
+.anom.crit .at{color:var(--red)}.anom.warn .at{color:var(--amber)}.anom.info .at{color:var(--blue)}
+.atitle{font-size:.76rem;font-weight:600;color:#fff;margin-bottom:2px}
+.adesc{font-size:.68rem;color:var(--text2);line-height:1.4}
+.atime{font-size:.58rem;font-family:'DM Mono',monospace;color:var(--text3);white-space:nowrap;flex-shrink:0}
+
+/* DISCOVERY (platform page) */
+.srch-bar{position:relative;margin-bottom:11px}
+.srch{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:8px 38px 8px 14px;font-size:.82rem;color:#fff;outline:none;font-family:'Inter',sans-serif}
+.srch::placeholder{color:var(--text3)}
+.srch-ico{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text2)}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.chip{padding:4px 11px;border-radius:20px;border:1px solid var(--border2);font-size:.7rem;color:var(--text2);cursor:pointer;transition:.12s;background:transparent}
+.chip:hover{border-color:var(--green2);color:var(--green3)}
+.chip.on{background:rgba(34,197,94,.09);border-color:var(--green2);color:var(--green3)}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px}
+.rc{background:var(--dark2);border:1px solid var(--border);border-radius:9px;padding:12px;cursor:pointer;transition:.15s}
+.rc:hover{border-color:var(--border2);background:var(--surface);transform:translateY(-1px)}
+.rc-type{font-size:.56rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:4px}
+.rc-type.dataset{color:var(--green)}.rc-type.program{color:var(--teal)}.rc-type.volunteer{color:var(--amber)}.rc-type.research{color:var(--blue)}
+.rc-title{font-size:.79rem;font-weight:700;color:#fff;margin-bottom:3px;line-height:1.3}
+.rc-meta{font-size:.67rem;color:var(--text2);line-height:1.35}
+.rc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
+.rc-org{font-size:.62rem;color:var(--green)}
+.rc-tags{display:flex;gap:3px}
+.rc-tag{font-size:.52rem;background:var(--surface);border:1px solid var(--border);color:var(--text2);padding:1px 5px;border-radius:3px}
+
+/* COLLAB */
+.cl-grid{display:grid;grid-template-columns:1fr 270px;gap:10px}
+.r-card{background:var(--dark2);border:1px solid var(--border);border-radius:9px;padding:11px;display:flex;gap:8px;cursor:pointer;transition:.12s;margin-bottom:7px}
+.r-card:hover,.r-card.sel{border-color:var(--border2);background:var(--surface)}
+.rav{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.68rem;color:var(--black)}
+.rname{font-size:.79rem;font-weight:700;color:#fff}
+.rinst{font-size:.64rem;color:var(--text2)}
+.rfocus{font-size:.64rem;color:var(--text2);margin-top:3px;line-height:1.35}
+.orcid{font-size:.55rem;font-family:'DM Mono',monospace;color:var(--teal);margin-top:3px}
+.mpct{margin-left:auto;flex-shrink:0;font-size:.6rem;font-family:'DM Mono',monospace;color:var(--green);background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);padding:2px 6px;border-radius:7px;align-self:flex-start}
+.conn-panel{background:var(--dark2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cp-hd{padding:10px 12px;border-bottom:1px solid var(--border)}
+.cp-ttl{font-size:.78rem;font-weight:700;color:#fff}
+.cp-sub{font-size:.64rem;color:var(--text2);margin-top:1px}
+.ci{padding:9px 12px;border-bottom:1px solid var(--border);border-left:2px solid transparent;cursor:pointer;transition:.12s}
+.ci:last-child{border-bottom:none}.ci:hover{background:var(--surface)}
+.ci.cm{border-left-color:var(--green)}.ci.cp2{border-left-color:var(--teal)}.ci.cq{border-left-color:var(--amber)}
+.ci-type{font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:2px}
+.ci.cm .ci-type{color:var(--green)}.ci.cp2 .ci-type{color:var(--teal)}.ci.cq .ci-type{color:var(--amber)}
+.ci-txt{font-size:.72rem;color:var(--text);line-height:1.4}
+.ci-txt strong{color:#fff}
+.ci-act{margin-top:3px;font-size:.64rem;color:var(--green);cursor:pointer}
+
+/* MODAL */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.ov.open{display:flex}
+.modal{background:var(--dark2);border:1px solid var(--border2);border-radius:14px;width:450px;max-height:88vh;overflow-y:auto;animation:slideUp .2s ease}
+.m-hd{padding:14px 17px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.m-ttl{font-size:.92rem;font-weight:800;color:#fff}
+.m-x{cursor:pointer;color:var(--text2);width:22px;height:22px;background:var(--surface);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;transition:.12s}
+.m-x:hover{background:var(--border2);color:#fff}
+.m-bd{padding:16px}
+.m-ft{padding:11px 17px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:6px}
+.prow{display:flex;gap:5px}
+.pbtn{flex:1;padding:7px;border-radius:7px;border:1px solid var(--border2);font-size:.7rem;color:var(--text2);cursor:pointer;text-align:center;transition:.15s;background:var(--surface);font-weight:500}
+.pbtn.sp{border-color:var(--green2);color:var(--green);background:rgba(34,197,94,.07)}
+.pbtn.sr{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.07)}
+.pbtn.sv{border-color:var(--blue);color:var(--blue);background:rgba(59,130,246,.07)}
+.pdesc{font-size:.66rem;color:var(--text3);margin-top:4px}
+.dropz{border:2px dashed var(--border2);border-radius:8px;padding:18px;text-align:center;cursor:pointer;transition:.2s}
+.dropz:hover{border-color:var(--green2);background:rgba(34,197,94,.03)}
+.drop-ico{font-size:1.5rem;margin-bottom:4px}
+.drop-txt{font-size:.74rem;color:var(--text2)}.drop-txt span{color:var(--green)}
+.drop-fmt{font-size:.6rem;color:var(--text3);margin-top:2px;font-family:'DM Mono',monospace}
+.up-st{font-size:.66rem;font-family:'DM Mono',monospace;color:var(--green);margin-top:4px;display:none}
+.qual-note{font-size:.68rem;color:var(--text2);background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:6px;padding:7px 10px;margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 — HOME
+══════════════════════════════════════ -->
+<div class="screen active" id="s-main">
+  <div class="earth-hero"><div class="earth-glow"></div><div class="earth-inner"><img src="/assets/logo.jpeg" class="earth-logo" alt="Zytherion Biovance"></div></div>
+
+  <nav class="nav">
+    <div class="nav-back" onclick="showScreen('s-main')">←</div>
+    <div class="nav-ai-badge" onclick="showScreen('s-chat')">
+      <div class="ai-av" id="nav-av">FA</div>
+      <div class="ai-name" id="nav-name">Forest AI</div>
+    </div>
+    <input class="nav-search" placeholder="Ask your specialized AI anything…" onclick="showScreen('s-chat')" readonly>
+    <div class="nav-srch-btn" onclick="showScreen('s-discovery')">🔍</div>
+    <div class="nav-private">PRIVATE</div>
+    <div class="nav-links">
+      <div class="nav-link" onclick="showScreen('s-platform')">Dashboard</div>
+      <div class="nav-link" onclick="showScreen('s-discovery')">Discovery</div>
+      <div class="nav-link" onclick="showAbout()">About Us</div>
+      <div class="nav-link" onclick="showContact()">Contact</div>
+    </div>
+    <div style="color:var(--text2);cursor:pointer">⚙️</div>
+  </nav>
+
+  <div class="hero-scroll">
+    <div class="hero-title">Digital Nervous System</div>
+    <div class="hero-sub">New Brain For Healthy Earth</div>
+
+    <div class="vision-card">
+      <div class="vision-title">Our Vision</div>
+      <div class="vision-body">We believe in harnessing the power of Earth observation to create intelligent systems that understand our planet's complex ecosystems. Through advanced AI and real-time data analysis, we transform conservation data into actionable insights that drive environmental protection and sustainable development — building the world's first comprehensive conservation infrastructure platform.</div>
+      <div class="vstats">
+        <div class="vstat"><div class="vstat-val vc-blue">24/7</div><div class="vstat-label">Global Monitoring</div></div>
+        <div class="vstat"><div class="vstat-val vc-green">AI-Powered</div><div class="vstat-label">Intelligent Analysis</div></div>
+        <div class="vstat"><div class="vstat-val vc-purple">Real-Time</div><div class="vstat-label">Data Processing</div></div>
+      </div>
+    </div>
+
+    <div class="hero-btns">
+      <div class="hbtn btn-purple" onclick="showScreen('s-platform')">Explore Our Technology</div>
+      <div class="hbtn btn-white" onclick="showScreen('s-discovery')">All-in-One Search</div>
+      <div class="hbtn btn-g" onclick="showScreen('s-chat')" style="padding:13px 28px;border-radius:30px;border:none;font-size:.88rem">Chat with AI</div>
+    </div>
+
+    <div class="ai-section">
+      <div class="ai-sec-title">Explore other AI's</div>
+      <div class="carousel-wrap">
+        <div class="c-btn" onclick="slide(-1)">‹</div>
+        <div class="carousel">
+          <div class="c-track" id="ctrack">
+            <div class="ai-card active" onclick="selectAI(0)"><div class="ai-card-img" style="background:linear-gradient(135deg,#0A3D1A,#1A6B2A)">🌲</div><div class="ai-card-lbl">Forest AI</div></div>
+            <div class="ai-card" onclick="selectAI(1)"><div class="ai-card-img" style="background:linear-gradient(135deg,#0A1A3D,#1A3D6B)">🐠</div><div class="ai-card-lbl">Marine AI</div></div>
+            <div class="ai-card" onclick="selectAI(2)"><div class="ai-card-img" style="background:linear-gradient(135deg,#1A0A3D,#3D1A6B)">🔬</div><div class="ai-card-lbl">Research AI</div></div>
+            <div class="ai-card" onclick="selectAI(3)"><div class="ai-card-img" style="background:linear-gradient(135deg,#2D1A0A,#6B3D1A)">🦁</div><div class="ai-card-lbl">Wildlife AI</div></div>
+            <div class="ai-card" onclick="selectAI(4)"><div class="ai-card-img" style="background:linear-gradient(135deg,#3D2D0A,#8B6A1A)">📚</div><div class="ai-card-lbl">Education AI</div></div>
+            <div class="ai-card" onclick="selectAI(5)"><div class="ai-card-img" style="background:linear-gradient(135deg,#0A2D2D,#1A6B6B)">🌿</div><div class="ai-card-lbl">Nature AI</div></div>
+          </div>
+        </div>
+        <div class="c-btn" onclick="slide(1)">›</div>
+      </div>
+      <div class="ai-active-info">
+        <div class="ai-active-badge">ACTIVE</div>
+        <div class="ai-active-name" id="ai-active-name">Forest AI</div>
+        <div class="ai-active-desc" id="ai-active-desc">Monitor deforestation and forest health.</div>
+        <div class="btn btn-g" onclick="showScreen('s-chat')" style="margin-top:4px">Chat with AI →</div>
+      </div>
+    </div>
+
+    <!-- ABOUT section (hidden by default, toggled) -->
+    <div id="about-section" style="display:none;max-width:820px;width:100%;margin-top:28px;background:rgba(14,23,16,.88);border:1px solid rgba(42,61,44,.8);border-radius:16px;padding:28px;animation:slideUp .3s ease">
+      <div style="font-size:1.2rem;font-weight:800;color:#fff;text-align:center;margin-bottom:14px">About Us</div>
+      <!-- COMPANY VIDEO -->
+      <div style="border-radius:12px;overflow:hidden;border:1px solid rgba(34,197,94,.25);margin-bottom:20px;background:#000">
+        <video controls poster="/assets/logo.jpeg" style="width:100%;display:block;max-height:380px;background:#000">
+          <source src="/assets/178809-860734631.mp4" type="video/mp4">
+          Your browser does not support video playback.
+        </video>
+        <div style="padding:8px 12px;background:rgba(34,197,94,.06);font-size:.68rem;color:var(--text2);font-family:'DM Mono',monospace">▶ Zytherion Biovance — Digital Nervous System for the Planet</div>
+      </div>
+      <div style="font-size:.88rem;font-weight:700;color:#fff;text-align:center;margin-bottom:10px">What We Are: A Conservation Data &amp; Collaboration Platform</div>
+      <div style="font-size:.84rem;color:var(--text2);text-align:center;line-height:1.75;margin-bottom:18px">Zytherion Biovance is building the world's first comprehensive conservation infrastructure platform — the foundational operating system that connects every aspect of wildlife research, environmental monitoring, and conservation efforts globally.</div>
+      <div style="font-size:.82rem;font-weight:700;color:#fff;text-align:center;margin-bottom:8px">The Core Platform: "Digital Nervous System of the Planet"</div>
+      <div style="background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:14px;margin-bottom:14px;font-size:.8rem;color:var(--text2);line-height:1.7;text-align:center">Primary Function: Conservation Data Infrastructure. Our platform serves as the central hub where conservation organizations, researchers, and government agencies can store, access, analyze, and share critical environmental data.</div>
+      <div style="font-size:.8rem;font-weight:700;color:#fff;text-align:center;margin-bottom:10px">Search &amp; Discovery Engine</div>
+      <div style="font-size:.8rem;color:var(--text2);text-align:center;line-height:1.7;margin-bottom:18px">Think of it as the "search engine for conservation" — a Google for wildlife data, habitat monitoring, volunteer programs, and conservation research worldwide.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:12px"><div style="font-size:.76rem;font-weight:700;color:var(--green);margin-bottom:7px">Public Layer: Open Conservation Hub</div><div style="font-size:.72rem;color:var(--text2);line-height:1.6">· Searchable public dataset index<br>· Volunteer program listings<br>· Species education & citizen science<br>· Live safari public viewing</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:12px"><div style="font-size:.76rem;font-weight:700;color:var(--blue);margin-bottom:7px">Private Layer: Secure Research Infrastructure</div><div style="font-size:.72rem;color:var(--text2);line-height:1.6">· Permission-governed data access<br>· Institutional researcher tools<br>· Satellite feed integration<br>· FedRAMP-compatible architecture</div></div>
+      </div>
+    </div>
+
+    <!-- CONTACT section -->
+    <div id="contact-section" style="display:none;max-width:820px;width:100%;margin-top:28px;background:rgba(14,23,16,.88);border:1px solid rgba(42,61,44,.8);border-radius:16px;padding:28px;animation:slideUp .3s ease">
+      <div style="font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:20px">Contact Us</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <div style="font-size:.84rem;color:var(--text2);line-height:1.7;margin-bottom:16px">Have questions, ideas, or want to collaborate? Reach out — we love hearing from researchers, conservationists, and curious minds.</div>
+          <div style="background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:8px">
+            <div style="font-size:.8rem;font-weight:700;color:#fff;margin-bottom:4px">Zytherion Biovance</div>
+            <div style="font-size:.72rem;color:var(--text2);line-height:1.6">Digital Nervous System Lab<br>4539 North 22nd STE R<br>Phoenix, AZ 85016</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:12px;display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:.76rem;color:#fff">info@zytherionbiovance.com</div><div style="font-size:.68rem;color:var(--text2)">480-490-4120</div></div>
+            <div class="btn btn-ghost" style="font-size:.68rem">Email us</div>
+          </div>
+        </div>
+        <div>
+          <div class="fld"><div class="flbl">Name</div><input class="finput" placeholder="Your name"></div>
+          <div class="fld"><div class="flbl">Email</div><input class="finput" placeholder="you@example.com"></div>
+          <div class="fld"><div class="flbl">Message</div><textarea class="finput" rows="3" placeholder="How can we help?" style="resize:vertical"></textarea></div>
+          <div class="btn btn-g" style="width:100%;text-align:center;display:block">Send</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="max-width:820px;width:100%;margin-top:32px;padding:18px 0;border-top:1px solid rgba(42,61,44,.4);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em">Zytherion Biovance</div>
+      <div style="display:flex;gap:20px"><span style="font-size:.73rem;color:var(--text3);cursor:pointer" onclick="showAbout()">About</span><span style="font-size:.73rem;color:var(--text3);cursor:pointer" onclick="showContact()">Contact</span></div>
+      <div style="font-size:.7rem;color:var(--text3)">© 2025 Zytherion Biovance</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2 — DNS DISCOVERY
+══════════════════════════════════════ -->
+<div class="screen" id="s-discovery">
+  <div class="disc-hero">
+    <div class="disc-bg" id="disc-bg" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80')"></div>
+    <div class="disc-ov"></div>
+    <nav class="disc-nav">
+      <div style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="showScreen('s-main')"><img src="/assets/logo.jpeg" class="logo-img" style="width:28px;height:28px"><div class="disc-logo" style="cursor:pointer">Zytherion Biovance</div></div>
+      <div class="disc-tabs">
+        <div class="disc-tab active" onclick="dtab(this)">All</div>
+        <div class="disc-tab" onclick="dtab(this)">Images</div>
+        <div class="disc-tab" onclick="dtab(this)">Videos</div>
+        <div class="disc-tab" onclick="dtab(this)">News</div>
+        <div class="disc-tab" onclick="dtab(this)">Maps</div>
+      </div>
+      <div class="disc-right">
+        <span class="safe-lbl">Safe Search</span>
+        <div class="safe-tog"></div>
+        <div style="color:rgba(255,255,255,.6);cursor:pointer">⚙️</div>
+      </div>
+    </nav>
+    <div class="disc-center">
+      <img src="/assets/logo.jpeg" class="logo-img" style="width:72px;height:72px;margin-bottom:10px;box-shadow:0 0 30px rgba(34,197,94,.5)">
+      <div class="disc-htitle">DNS Discovery</div>
+      <div class="disc-hsub">Enhanced, fast, and focused — switch categories and search your world.</div>
+      <div class="disc-sw">
+        <input class="disc-sinput" id="disc-in" placeholder="Search conservation datasets, species, programs…" onkeydown="if(event.key==='Enter')doSearch()">
+        <div class="disc-sico" onclick="doSearch()">🔍</div>
+      </div>
+      <div class="disc-tags">
+        <div class="disc-tag active" onclick="setBg(this,'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80','🏔️')">Background</div>
+        <div class="disc-tag" onclick="setBg(this,'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1600&q=80','🌲')">Nature</div>
+        <div class="disc-tag" onclick="setBg(this,'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=1600&q=80','🦊')">Wildlife</div>
+        <div class="disc-tag" onclick="setBg(this,'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=1600&q=80','🐠')">Marine</div>
+        <div class="disc-tag" onclick="setBg(this,'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=1600&q=80','🏜️')">Desert</div>
+      </div>
+      <div class="disc-hot">
+        <span class="lbl">Trending:</span>
+        <span onclick="quickSrch('rainforest')">rainforest</span>
+        <span onclick="quickSrch('wildlife migration')">wildlife migration</span>
+        <span onclick="quickSrch('climate change')">climate change</span>
+        <span onclick="quickSrch('biodiversity')">biodiversity</span>
+        <span onclick="quickSrch('ocean currents')">ocean currents</span>
+      </div>
+    </div>
+  </div>
+  <div class="disc-results" id="disc-results">
+    <div class="dr-left">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="dr-filters">
+          <div class="rf active">Any time</div><div class="rf">Past 24 hours</div><div class="rf">Past week</div><div class="rf">Past year</div>
+        </div>
+        <div style="font-size:.78rem;color:#70757a">About 13,022 results (0.18s)</div>
+      </div>
+      <div class="dr-meta">Showing results for <strong id="srch-term">Nature</strong></div>
+      <div id="results-list"></div>
+    </div>
+    <div class="dr-right">
+      <div class="qi-box">
+        <div class="qi-img" id="qi-img">🌿</div>
+        <div class="qi-body">
+          <div class="qi-lbl">Quick info</div>
+          <div class="qi-name" id="qi-name">Nature</div>
+          <div class="qi-row"><span class="qi-key">Category:</span><span id="qi-cat">Conservation</span></div>
+          <div class="qi-row"><span class="qi-key">Relevance:</span><span style="color:#16A34A">High</span></div>
+          <div class="qi-row"><span class="qi-key">Updated:</span><span>Today</span></div>
+          <div class="qi-tabs"><div class="qi-tab">Overview</div><div class="qi-tab">News</div><div class="qi-tab">Images</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3 — AI CHAT
+══════════════════════════════════════ -->
+<div class="screen" id="s-chat">
+  <nav class="chat-nav">
+    <div class="nav-back" onclick="showScreen('s-main')">←</div>
+    <div class="chat-ai-info">
+      <div class="chat-av" id="chat-av">FA</div>
+      <div>
+        <div class="chat-ai-name" id="chat-name">Forest AI</div>
+        <div class="chat-ai-sub" id="chat-sub">Specialized in forest ecology &amp; deforestation monitoring</div>
+      </div>
+    </div>
+    <div class="chat-status"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite"></div>Online</div>
+  </nav>
+  <div class="chat-body" id="chat-body">
+    <div class="msg"><div class="msg-av ai" id="cb-av">FA</div><div class="msg-bubble ai">Hello! I'm <strong>Forest AI</strong>, your specialized conservation intelligence. I can help with deforestation data, species habitat analysis, canopy monitoring, predictive ecosystem modeling, and connecting you with researchers across the Zytherion platform. What would you like to explore?</div></div>
+  </div>
+  <div class="chat-input-area">
+    <div class="chat-sugs">
+      <div class="chat-sug" onclick="sendMsg('What are the latest Amazon deforestation rates?')">Latest Amazon deforestation data</div>
+      <div class="chat-sug" onclick="sendMsg('Show me forest health predictions for next 6 months')">6-month forest forecast</div>
+      <div class="chat-sug" onclick="sendMsg('Connect me with researchers studying similar ecosystems')">Find related researchers</div>
+      <div class="chat-sug" onclick="sendMsg('What anomalies are flagged in current monitoring?')">Current anomaly alerts</div>
+      <div class="chat-sug" onclick="sendMsg('How does offline field sync work?')">Offline sync explained</div>
+    </div>
+    <div class="chat-iw">
+      <textarea class="chat-input" id="chat-input" placeholder="Ask Forest AI anything about conservation…" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"></textarea>
+      <div class="chat-send" onclick="sendMsg()">↑</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 4 — PLATFORM DASHBOARD
+══════════════════════════════════════ -->
+<div class="screen" id="s-platform">
+  <div class="plat-layout">
+    <aside class="sidebar">
+      <div class="sb-logo">
+        <div style="display:flex;align-items:center;gap:8px"><img src="/assets/logo.jpeg" class="logo-img" style="width:30px;height:30px"><div><div class="sb-logo-txt">Zytherion <span>Biovance</span></div>
+        <div class="sb-live"><span class="ps-dot"></span>Live Platform</div></div></div>
+      </div>
+      <div class="sb-org">
+        <div class="sb-org-card"><div class="ai-av">AZ</div><div><div class="sb-org-name">AZ Game &amp; Fish</div><div class="sb-org-role">Partner Organization</div></div></div>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-lbl">Platform</div>
+        <div class="sb-item on" onclick="pnav('dashboard',this)"><span class="sb-ico">⚡</span>Live Dashboard</div>
+        <div class="sb-item" onclick="pnav('pipeline',this)"><span class="sb-ico">🔄</span>Data Pipeline</div>
+        <div class="sb-item" onclick="pnav('satellite',this)"><span class="sb-ico">🛰️</span>Satellite Feeds<span class="sb-badge">LIVE</span></div>
+        <div class="sb-item" onclick="pnav('safari',this)"><span class="sb-ico">🚁</span>Live Safari<span class="sb-badge">▶</span></div>
+        <div class="sb-item" onclick="pnav('fieldsync',this)"><span class="sb-ico">📡</span>Field Sync<span class="sb-badge">4</span></div>
+        <div class="sb-item" onclick="pnav('discovery',this)"><span class="sb-ico">🔍</span>Discovery</div>
+        <div class="sb-item" onclick="pnav('collab',this)"><span class="sb-ico">🔬</span>Collaboration<span class="sb-badge">3</span></div>
+        <div class="sb-item" onclick="pnav('predict',this)"><span class="sb-ico">🤖</span>Intelligence</div>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-lbl">Data</div>
+        <div class="sb-item" onclick="openModal()"><span class="sb-ico">📤</span>Submit Dataset</div>
+        <div class="sb-item" onclick="pnav('permissions',this)"><span class="sb-ico">🔐</span>Permissions &amp; Audit</div>
+        <div class="sb-item"><span class="sb-ico">📁</span>My Datasets<span class="sb-badge">12</span></div>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-lbl">System</div>
+        <div class="sb-item" onclick="pnav('techstack',this)"><span class="sb-ico">⚙️</span>Tech Stack</div>
+        <div class="sb-item" onclick="pnav('cost',this)"><span class="sb-ico">💰</span>Infrastructure Cost</div>
+        <div class="sb-item" onclick="showScreen('s-chat')"><span class="sb-ico">💬</span>AI Assistant</div>
+        <div class="sb-item" onclick="showScreen('s-main')"><span class="sb-ico">🏠</span>Back to Home</div>
+      </div>
+    </aside>
+
+    <div class="plat-main">
+      <div class="plat-topbar">
+        <div><div class="pt-title" id="pt-title">Live Dashboard</div><div class="pt-sub" id="pt-sub">Real-time data · 38 organizations</div></div>
+        <div class="pt-right">
+          <button class="btn btn-ghost" onclick="openModal()">+ Submit Data</button>
+          <button class="btn btn-g">Export</button>
+        </div>
+      </div>
+
+      <!-- ─ DASHBOARD ─ -->
+      <div class="plat-page on" id="pp-dashboard" style="overflow-y:auto">
+        <div class="alert-bar aw"><span>⚠️</span><span><strong>Anomaly detected —</strong> Water temp in Sonoran region +2.8°C above 30-yr baseline · AZ Game &amp; Fish notified · 4 min ago</span></div>
+        <div class="kpi-grid">
+          <div class="kpi g"><div class="kpi-lbl">Active Streams</div><div class="kpi-val" id="k1">247</div><div class="kpi-d ku">↑ 12 today</div></div>
+          <div class="kpi t"><div class="kpi-lbl">Datasets Ingested</div><div class="kpi-val" id="k2">1,843</div><div class="kpi-d ku">↑ 6.2%</div></div>
+          <div class="kpi a"><div class="kpi-lbl">Partner Orgs</div><div class="kpi-val">38</div><div class="kpi-d ku">↑ 3 this month</div></div>
+          <div class="kpi r"><div class="kpi-lbl">Anomalies</div><div class="kpi-val" id="k3">7</div><div class="kpi-d kd">↑ 2 last hour</div></div>
+        </div>
+        <div class="g3">
+          <div class="card"><div class="ch"><span class="ct">Ingest Volume — 24h</span><span class="tag tg">LIVE</span></div><div class="cp"><canvas id="c-ingest" height="100"></canvas></div></div>
+          <div class="card"><div class="ch"><span class="ct">By Ecosystem</span></div><div class="cp"><canvas id="c-eco" height="100"></canvas></div></div>
+          <div class="card"><div class="ch"><span class="ct">Permissions</span></div><div class="cp"><canvas id="c-perm" height="100"></canvas></div></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="ch"><span class="ct">Active Research Map</span><span class="tag tt">38 Orgs</span></div>
+            <div style="padding:10px;background:var(--surface)">
+              <svg viewBox="0 0 580 195" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:6px;background:#08110A">
+                <rect width="580" height="195" fill="#08110A" rx="6"/>
+                <!-- grid lines -->
+                <line x1="190" y1="0" x2="190" y2="195" stroke="#1A3020" stroke-width=".5" stroke-dasharray="4,5"/>
+                <line x1="330" y1="0" x2="330" y2="195" stroke="#1A3020" stroke-width=".5" stroke-dasharray="4,5"/>
+                <line x1="0" y1="98" x2="580" y2="98" stroke="#1A3020" stroke-width=".5" stroke-dasharray="4,5"/>
+                <!-- pulsing rings -->
+                <circle cx="168" cy="122" r="8" fill="none" stroke="rgba(34,197,94,.3)"><animate attributeName="r" values="6;16;6" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values=".6;0;.6" dur="3s" repeatCount="indefinite"/></circle>
+                <circle cx="332" cy="158" r="8" fill="none" stroke="rgba(59,130,246,.3)"><animate attributeName="r" values="6;16;6" dur="4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;0;.5" dur="4s" repeatCount="indefinite"/></circle>
+                <!-- pins -->
+                <g style="cursor:pointer" onclick="document.getElementById('map-tip').textContent='→ Phoenix, AZ — Arizona Game &amp; Fish · 847 datasets · 142 species tagged'">
+                  <circle cx="168" cy="122" r="7" fill="rgba(34,197,94,.15)" stroke="#22C55E" stroke-width="1.5"/><circle cx="168" cy="122" r="3" fill="#22C55E"/>
+                  <text x="178" y="119" font-size="7" fill="rgba(34,197,94,.8)" font-family="monospace">Phoenix, AZ</text>
+                </g>
+                <g style="cursor:pointer" onclick="document.getElementById('map-tip').textContent='→ Gulf of Mexico — NOAA Marine · 1,204 datasets · coral + dolphin surveys'">
+                  <circle cx="332" cy="158" r="7" fill="rgba(59,130,246,.15)" stroke="#3B82F6" stroke-width="1.5"/><circle cx="332" cy="158" r="3" fill="#3B82F6"/>
+                  <text x="342" y="155" font-size="7" fill="rgba(59,130,246,.8)" font-family="monospace">Gulf, TX</text>
+                </g>
+                <g style="cursor:pointer" onclick="document.getElementById('map-tip').textContent='→ Pacific NW — USFS Region 6 · 632 datasets · old-growth monitoring'">
+                  <circle cx="96" cy="60" r="6" fill="rgba(20,184,166,.15)" stroke="#14B8A6" stroke-width="1.5"/><circle cx="96" cy="60" r="2.5" fill="#14B8A6"/>
+                </g>
+                <g style="cursor:pointer" onclick="document.getElementById('map-tip').textContent='→ Florida Keys — Coral Foundation · 389 datasets · bleaching surveys'">
+                  <circle cx="445" cy="160" r="6" fill="rgba(239,68,68,.15)" stroke="#EF4444" stroke-width="1.5"/><circle cx="445" cy="160" r="2.5" fill="#EF4444"/>
+                </g>
+                <g style="cursor:pointer" onclick="document.getElementById('map-tip').textContent='→ Great Plains — Prairie Institute · 211 datasets · bison corridors'">
+                  <circle cx="293" cy="88" r="5" fill="rgba(245,158,11,.15)" stroke="#F59E0B" stroke-width="1.5"/><circle cx="293" cy="88" r="2" fill="#F59E0B"/>
+                </g>
+                <g style="cursor:pointer" onclick="document.getElementById('map-tip').textContent='→ Great Lakes — Freshwater Network · 567 datasets · water quality'">
+                  <circle cx="406" cy="68" r="6" fill="rgba(168,85,247,.15)" stroke="#A855F7" stroke-width="1.5"/><circle cx="406" cy="68" r="2.5" fill="#A855F7"/>
+                </g>
+                <g style="cursor:pointer" onclick="document.getElementById('map-tip').textContent='→ Amazon Basin — INPA Brazil · 2,341 datasets · deforestation monitoring'">
+                  <circle cx="380" cy="155" r="5" fill="rgba(34,197,94,.15)" stroke="#22C55E" stroke-width="1.2"/><circle cx="380" cy="155" r="2" fill="#22C55E"/>
+                </g>
+                <text x="8" y="190" font-size="7" fill="#2A4030" font-family="monospace">Click pins · 38 active organizations · 7 priority zones</text>
+              </svg>
+            </div>
+            <div class="map-tip" id="map-tip">→ Click any pin to view organization details</div>
+          </div>
+          <div class="card"><div class="ch"><span class="ct">Live Ingest Feed</span><span class="tag tg">STREAMING</span></div><div id="feed" style="max-height:240px;overflow-y:auto"></div></div>
+        </div>
+      </div>
+
+      <!-- ─ PIPELINE ─ -->
+      <div class="plat-page" id="pp-pipeline" style="overflow-y:auto">
+        <div style="margin-bottom:14px">
+          <div style="font-size:.72rem;color:var(--text2);margin-bottom:12px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:10px 13px;line-height:1.6">
+            <strong style="color:var(--green)">How it works:</strong> Data hits the Kafka queue the moment it arrives — dashboards update in seconds without waiting for processing. Flink normalizes, classifies, and permission-routes every event in milliseconds. Public data flows automatically to the Discovery layer with zero manual review.
+          </div>
+        </div>
+        <div class="pipeline-wrap" style="gap:6px;padding-bottom:14px">
+          <div class="pipe-node"><div class="pn-ico">📡</div><div class="pn-name">Sources</div><div class="pn-tech">4 channels</div><div class="pn-lat" style="color:var(--teal)">concurrent</div></div>
+          <div class="pipe-sep">→</div>
+          <div class="pipe-node" style="border-color:rgba(34,197,94,.3)"><div class="pn-ico">📨</div><div class="pn-name">Kafka</div><div class="pn-tech">Message Broker</div><div class="pn-lat">&lt;50ms queue</div></div>
+          <div class="pipe-sep">→</div>
+          <div class="pipe-node" style="border-color:rgba(59,130,246,.3)"><div class="pn-ico">⚡</div><div class="pn-name">Flink</div><div class="pn-tech">Stream Processor</div><div class="pn-lat">&lt;120ms process</div></div>
+          <div class="pipe-sep">→</div>
+          <div class="pipe-node" style="border-color:rgba(20,184,166,.3)"><div class="pn-ico">🗄️</div><div class="pn-name">Storage</div><div class="pn-tech">6 DB types</div><div class="pn-lat">async writes</div></div>
+          <div class="pipe-sep">→</div>
+          <div class="pipe-node" style="border-color:rgba(168,85,247,.3)"><div class="pn-ico">🔌</div><div class="pn-name">API Layer</div><div class="pn-tech">GraphQL+WS+REST</div><div class="pn-lat">&lt;30ms P99</div></div>
+          <div class="pipe-sep">→</div>
+          <div class="pipe-node" style="border-color:rgba(245,158,11,.3)"><div class="pn-ico">📊</div><div class="pn-name">Dashboard</div><div class="pn-tech">WebSocket push</div><div class="pn-lat">real-time</div></div>
+        </div>
+        <div style="margin-bottom:10px"><div style="font-size:.8rem;font-weight:700;color:#fff;margin-bottom:8px">Ingestion Channels</div>
+        <div class="channel-grid">
+          <div class="ch-card"><div class="ch-ico">👩‍🔬</div><div class="ch-name">Researcher Uploads</div><div class="ch-desc">Datasets, field reports, species observations structured via API. Queued instantly to Kafka.</div><div class="ch-badge">seconds to dashboard</div></div>
+          <div class="ch-card"><div class="ch-ico">🛰️</div><div class="ch-name">Satellite Feeds</div><div class="ch-desc">NASA Earthdata, ESA Copernicus, USGS via scheduled + webhook pulls. 15-min refresh cycles.</div><div class="ch-badge">15-min cadence</div></div>
+          <div class="ch-card"><div class="ch-ico">🚁</div><div class="ch-name">Drone & Safari</div><div class="ch-desc">RTMP/WebRTC to CDN edge node — bypasses warehouse for sub-second live video. Telemetry writes in parallel.</div><div class="ch-badge">&lt;1s live latency</div></div>
+          <div class="ch-card"><div class="ch-ico">📴</div><div class="ch-name">Offline Field Sync</div><div class="ch-desc">SQLite-first local app. CRDT conflict resolution. Auto-syncs on any connection including 2G.</div><div class="ch-badge">no data loss</div></div>
+        </div></div>
+        <div class="card"><div class="ch"><span class="ct">Stream Processor Actions (Flink)</span><span class="tag tg">LIVE</span></div>
+        <div class="cp" style="display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:8px;background:var(--surface);border-radius:7px"><div style="width:20px;height:20px;border-radius:50%;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;color:var(--green)">1</div><div><div style="font-size:.75rem;font-weight:600;color:#fff">Normalize</div><div style="font-size:.68rem;color:var(--text2)">Standardize every org's data format into the platform unified schema in milliseconds</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:8px;background:var(--surface);border-radius:7px"><div style="width:20px;height:20px;border-radius:50%;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;color:var(--blue)">2</div><div><div style="font-size:.75rem;font-weight:600;color:#fff">Tag &amp; Classify</div><div style="font-size:.68rem;color:var(--text2)">Auto-tag by species, geography, ecosystem type, and research category</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:8px;background:var(--surface);border-radius:7px"><div style="width:20px;height:20px;border-radius:50%;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;color:var(--purple)">3</div><div><div style="font-size:.75rem;font-weight:600;color:#fff">Permission Route</div><div style="font-size:.68rem;color:var(--text2)">Reads dataset-level flag — public data routes to Discovery automatically, zero manual review</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:8px;background:var(--surface);border-radius:7px"><div style="width:20px;height:20px;border-radius:50%;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;color:var(--red)">4</div><div><div style="font-size:.75rem;font-weight:600;color:#fff">Anomaly Detection</div><div style="font-size:.68rem;color:var(--text2)">Isolation Forest runs inline — fires threshold alerts before data even reaches storage</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:8px;background:var(--surface);border-radius:7px"><div style="width:20px;height:20px;border-radius:50%;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;color:var(--amber)">5</div><div><div style="font-size:.75rem;font-weight:600;color:#fff">Dead Letter Queue</div><div style="font-size:.68rem;color:var(--text2)">Malformed or rejected records routed to DLQ for manual review — zero data loss on errors</div></div></div>
+        </div></div>
+      </div>
+
+      <!-- ─ SATELLITE ─ -->
+      <div class="plat-page" id="pp-satellite" style="overflow-y:auto">
+        <div class="kpi-grid">
+          <div class="kpi g"><div class="kpi-lbl">Active Feeds</div><div class="kpi-val">5</div><div class="kpi-d ku">1 pending license</div></div>
+          <div class="kpi t"><div class="kpi-lbl">Data Points/hr</div><div class="kpi-val">48K</div><div class="kpi-d ku">↑ from 3 passes</div></div>
+          <div class="kpi a"><div class="kpi-lbl">Coverage Area</div><div class="kpi-val">62%</div><div class="kpi-d kn">of monitored zones</div></div>
+          <div class="kpi b"><div class="kpi-lbl">Last Pass</div><div class="kpi-val" style="font-size:1.1rem">4 min</div><div class="kpi-d kn">ago · Copernicus</div></div>
+        </div>
+        <div style="margin-bottom:10px"><div style="font-size:.8rem;font-weight:700;color:#fff;margin-bottom:9px">Satellite Integration Status</div>
+        <div class="sat-grid">
+          <div class="sat-card live"><div class="sat-name">NASA Earthdata</div><div class="sat-agency">NASA / GSFC</div><div class="sat-status"><div class="sat-dot"></div><span style="color:var(--green)">LIVE</span></div><div class="sat-stat-val">MODIS · Landsat-9 · 15-min refresh</div></div>
+          <div class="sat-card live"><div class="sat-name">ESA Copernicus</div><div class="sat-agency">European Space Agency</div><div class="sat-status"><div class="sat-dot"></div><span style="color:var(--green)">LIVE</span></div><div class="sat-stat-val">Sentinel-2 · 10m resolution · free tier</div></div>
+          <div class="sat-card ok"><div class="sat-name">USGS Seismic</div><div class="sat-agency">US Geological Survey</div><div class="sat-status"><div class="sat-dot"></div><span style="color:var(--teal)">CONNECTED</span></div><div class="sat-stat-val">Earthquake feed · precursor anomalies</div></div>
+          <div class="sat-card ok"><div class="sat-name">NOAA Climate</div><div class="sat-agency">National Oceanic &amp; Atmospheric</div><div class="sat-status"><div class="sat-dot"></div><span style="color:var(--teal)">CONNECTED</span></div><div class="sat-stat-val">SST · weather patterns · ocean heat</div></div>
+          <div class="sat-card ok"><div class="sat-name">Planet Labs</div><div class="sat-agency">Planet Labs PBC</div><div class="sat-status"><div class="sat-dot"></div><span style="color:var(--teal)">CONNECTED</span></div><div class="sat-stat-val">SkySat · 3m resolution · daily</div></div>
+          <div class="sat-card pending"><div class="sat-name">NASA SpaceCube</div><div class="sat-agency">NASA / Goddard — FPGA Edge</div><div class="sat-status"><div class="sat-dot"></div><span style="color:var(--amber)">PENDING LICENSE</span></div><div class="sat-stat-val">Onboard edge processing · bandwidth reduction</div></div>
+        </div></div>
+        <div class="card"><div class="ch"><span class="ct">Recent Satellite Events</span><span class="tag tt">AUTO-INGESTED</span></div>
+          <div class="feed-item"><div class="fd-dot" style="background:var(--green)"></div><div style="flex:1"><div class="fd-org">NASA Earthdata — MODIS Thermal Pass</div><div class="fd-desc">Sonoran region thermal anomaly confirmed +2.8°C above 30-yr baseline · 3 stations flagged</div></div><div class="fd-time">4 min ago</div></div>
+          <div class="feed-item"><div class="fd-dot" style="background:var(--teal)"></div><div style="flex:1"><div class="fd-org">ESA Copernicus — Sentinel-2 Pass</div><div class="fd-desc">NDVI update — Amazon sector 7-G · canopy density −3.2% from last pass</div></div><div class="fd-time">12 min ago</div></div>
+          <div class="feed-item"><div class="fd-dot" style="background:var(--blue)"></div><div style="flex:1"><div class="fd-org">NOAA Climate — SST Update</div><div class="fd-desc">Gulf surface temp +1.4°C above seasonal average · coral bleaching risk elevated</div></div><div class="fd-time">22 min ago</div></div>
+          <div class="feed-item"><div class="fd-dot" style="background:var(--amber)"></div><div style="flex:1"><div class="fd-org">USGS Seismic — Microevent Cluster</div><div class="fd-desc">14 micro-events M&lt;2.0 detected near Cascade Range · 6-hour window · logged</div></div><div class="fd-time">1 hr ago</div></div>
+        </div>
+      </div>
+
+      <!-- ─ SAFARI ─ -->
+      <div class="plat-page" id="pp-safari" style="overflow-y:auto">
+        <div class="alert-bar ai2"><span>🚁</span><span><strong>Drone stream active</strong> — Sonoran Desert Survey · Drone ZB-04 · GPS lock · 4 viewers watching</span></div>
+        <div class="safari-wrap">
+          <div class="drone-view">
+            <div class="drone-bg">
+              <div style="position:absolute;top:55%;left:25%;font-size:1.2rem;opacity:.5">🌵</div>
+              <div style="position:absolute;top:40%;left:60%;font-size:1rem;opacity:.4">🌵</div>
+              <div style="position:absolute;top:65%;left:70%;font-size:.9rem;opacity:.3">🌿</div>
+            </div>
+            <div class="hud">
+              <div class="hud-tl"><div>GPS: 33.4484°N 112.0740°W</div><div>ALT: 42.3m AGL</div><div>HDG: 247° SW</div></div>
+              <div class="hud-tr"><div>DRONE: ZB-04</div><div>BATT: 78%</div><div id="hud-time">14:32:07</div></div>
+              <div class="hud-bl"><div>SPEED: 8.4 m/s</div><div>TEMP: 38.2°C</div></div>
+              <div class="hud-br"><div id="hud-species">Species: Gila Woodpecker</div><div>Conf: 94%</div></div>
+              <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+              <div class="drone-ico">🚁</div>
+              <div class="ping-ring"></div>
+            </div>
+          </div>
+          <div class="safari-stats">
+            <div class="ss-card"><div class="ss-lbl">Live Viewers</div><div class="ss-val" id="ss-viewers">4</div><div class="ss-sub">public stream</div></div>
+            <div class="ss-card"><div class="ss-lbl">Species Tagged</div><div class="ss-val" id="ss-tagged">17</div><div class="ss-sub">this session</div></div>
+            <div class="ss-card"><div class="ss-lbl">Observations</div><div class="ss-val" id="ss-obs">142</div><div class="ss-sub">total today</div></div>
+            <div class="ss-card"><div class="ss-lbl">Stream Latency</div><div class="ss-val" style="font-size:1rem">0.8s</div><div class="ss-sub">CDN edge · WebRTC</div></div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="card"><div class="ch"><span class="ct">GPS Track — Session</span><span class="tag tg">LIVE</span></div><div class="cp"><canvas id="c-track" height="90"></canvas></div></div>
+          <div class="species-log" style="border-radius:9px;overflow:hidden"><div class="ch"><span class="ct">Species Log</span><span class="tag ta">REAL-TIME</span></div><div id="species-log" style="max-height:200px;overflow-y:auto">
+            <div class="feed-item"><div class="fd-dot" style="background:var(--green)"></div><div style="flex:1"><div class="fd-org">Gila Woodpecker</div><div class="fd-desc">Visual · GPS locked · 94% confidence</div></div><div class="fd-time">just now</div></div>
+            <div class="feed-item"><div class="fd-dot" style="background:var(--teal)"></div><div style="flex:1"><div class="fd-org">Cactus Wren</div><div class="fd-desc">Audio · saguaro nesting · 89%</div></div><div class="fd-time">2m ago</div></div>
+            <div class="feed-item"><div class="fd-dot" style="background:var(--amber)"></div><div style="flex:1"><div class="fd-org">Gila Monster</div><div class="fd-desc">Visual · basking behavior · 97%</div></div><div class="fd-time">5m ago</div></div>
+            <div class="feed-item"><div class="fd-dot" style="background:var(--blue)"></div><div style="flex:1"><div class="fd-org">Roadrunner</div><div class="fd-desc">Visual · foraging · 91%</div></div><div class="fd-time">9m ago</div></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- ─ FIELD SYNC ─ -->
+      <div class="plat-page" id="pp-fieldsync" style="overflow-y:auto">
+        <div style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:10px 13px;margin-bottom:14px;font-size:.76rem;color:var(--blue);line-height:1.6">
+          <strong>Offline-First Architecture:</strong> Field researchers use a local SQLite app — every observation writes instantly with zero network required. Background sync uploads incrementally over any connection including 2G. CRDTs handle conflicts when two researchers log overlapping data offline. A researcher in the Amazon with 3 days of zero connectivity syncs everything within minutes of reconnecting.
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi g"><div class="kpi-lbl">Devices Online</div><div class="kpi-val">2</div><div class="kpi-d kn">of 4 active</div></div>
+          <div class="kpi t"><div class="kpi-lbl">Pending Records</div><div class="kpi-val">1,247</div><div class="kpi-d ku">syncing now</div></div>
+          <div class="kpi a"><div class="kpi-lbl">Conflicts Resolved</div><div class="kpi-val">14</div><div class="kpi-d ku">CRDT auto-merge</div></div>
+          <div class="kpi b"><div class="kpi-lbl">Last Sync</div><div class="kpi-val" style="font-size:1rem">2m ago</div><div class="kpi-d kn">Torres device</div></div>
+        </div>
+        <div style="margin-bottom:10px"><div style="font-size:.8rem;font-weight:700;color:#fff;margin-bottom:8px">Active Field Devices</div>
+        <div class="device-grid">
+          <div class="device-card"><div class="dev-hd"><div class="dev-av" style="background:var(--amber)">RT</div><div><div class="dev-name">Dr. Torres</div><div class="dev-loc">📴 Offline — Sierra Madre, MX</div></div></div><div style="font-size:.67rem;color:var(--text2)">847 records queued · no connection</div><div class="progress-track"><div class="progress-fill pf-a" style="width:0%"></div></div><div style="font-size:.62rem;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace">0% — awaiting connection</div></div>
+          <div class="device-card"><div class="dev-hd"><div class="dev-av" style="background:var(--blue)">JN</div><div><div class="dev-name">Dr. Nakamura</div><div class="dev-loc">📡 Syncing — Amazon Basin</div></div></div><div style="font-size:.67rem;color:var(--blue)">400 records uploading via satellite phone</div><div class="progress-track"><div class="progress-fill pf-b" style="width:67%"></div></div><div style="font-size:.62rem;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace">67% — chunked transfer active</div></div>
+          <div class="device-card"><div class="dev-hd"><div class="dev-av" style="background:var(--green)">SC</div><div><div class="dev-name">Dr. Chen</div><div class="dev-loc">✅ Complete — Cascade Range, WA</div></div></div><div style="font-size:.67rem;color:var(--green)">312 records synced · no conflicts</div><div class="progress-track"><div class="progress-fill pf-g" style="width:100%"></div></div><div style="font-size:.62rem;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace">100% — complete · dashboard updated</div></div>
+          <div class="device-card"><div class="dev-hd"><div class="dev-av" style="background:var(--teal)">AZ</div><div><div class="dev-name">AZ Game &amp; Fish</div><div class="dev-loc">🟢 Live — Sonoran Desert, AZ</div></div></div><div style="font-size:.67rem;color:var(--teal)">Real-time · LTE connected · streaming</div><div class="progress-track"><div class="progress-fill pf-g" style="width:100%"></div></div><div style="font-size:.62rem;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace">LIVE — no queue</div></div>
+        </div></div>
+        <div class="crdt-log card"><div class="ch"><span class="ct">CRDT Merge Log</span><span class="tag tb">AUTO-RESOLVED</span></div>
+          <div class="feed-item"><div class="fd-dot" style="background:var(--green)"></div><div style="flex:1"><div class="fd-org">Conflict Resolved — Observation #8841</div><div class="fd-desc">Torres + Nakamura logged same jaguar sighting 4 min apart. CRDT merged coordinates, kept both timestamps.</div></div><div class="fd-time">2m ago</div></div>
+          <div class="feed-item"><div class="fd-dot" style="background:var(--green)"></div><div style="flex:1"><div class="fd-org">Conflict Resolved — Dataset gps_track_2026_06_11</div><div class="fd-desc">Two GPS track segments overlapped by 12 points. Merged with Chen's submission as authoritative.</div></div><div class="fd-time">18m ago</div></div>
+          <div class="feed-item"><div class="fd-dot" style="background:var(--teal)"></div><div style="flex:1"><div class="fd-org">Sync Complete — Cascade Range batch</div><div class="fd-desc">312 records from Dr. Chen synced · 0 conflicts · stream processor routed to TimescaleDB + dashboard</div></div><div class="fd-time">34m ago</div></div>
+        </div>
+      </div>
+
+      <!-- ─ DISCOVERY ─ -->
+      <div class="plat-page" id="pp-discovery" style="overflow-y:auto">
+        <div class="srch-bar"><input class="srch" id="plat-srch" placeholder="Search datasets, programs, species…" oninput="filterD(this.value)"><span class="srch-ico">🔍</span></div>
+        <div class="chips" id="plat-chips">
+          <div class="chip on" onclick="setC(this,'all')">All</div>
+          <div class="chip" onclick="setC(this,'dataset')">Datasets</div>
+          <div class="chip" onclick="setC(this,'program')">Programs</div>
+          <div class="chip" onclick="setC(this,'volunteer')">Volunteer</div>
+          <div class="chip" onclick="setC(this,'research')">Research</div>
+          <div class="chip" onclick="setC(this,'marine')">🌊 Marine</div>
+          <div class="chip" onclick="setC(this,'forest')">🌲 Forest</div>
+          <div class="chip" onclick="setC(this,'desert')">🏜️ Desert</div>
+        </div>
+        <div class="rgrid" id="plat-dgrid"></div>
+      </div>
+
+      <!-- ─ COLLAB ─ -->
+      <div class="plat-page" id="pp-collab" style="overflow-y:auto">
+        <div class="cl-grid">
+          <div>
+            <div style="margin-bottom:9px"><input class="finput" placeholder="Search researchers by name, species, or ecosystem…" style="border-radius:20px"></div>
+            <div id="rlist"></div>
+            <div class="msg-panel" style="margin-top:10px">
+              <div class="mp-hd"><span class="ct">Researcher Messaging</span><span class="tag tg">WebSocket Live</span></div>
+              <div class="mp-body" id="mp-body">
+                <div class="mp-msg"><div class="mp-sender">Dr. Chen → Dr. Nakamura</div><div class="mp-txt">Kenji — I just uploaded the Q2 Atlantic shark tracking data. The migration corridor matches your Pacific data almost exactly. Platform flagged the overlap — want to open a shared workspace?</div><div class="mp-time">10:41 AM</div></div>
+                <div class="mp-msg"><div class="mp-sender">Dr. Nakamura → Dr. Chen</div><div class="mp-txt">Yes! That's exactly what I suspected. I can see the Neo4j graph already shows a 97% node overlap. Let's merge the datasets and run the cross-correlation model.</div><div class="mp-time">10:43 AM</div></div>
+                <div class="mp-msg"><div class="mp-sender">Platform AI</div><div class="mp-txt" style="border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04)">🤖 Cross-institutional match detected — Dr. Chen (FL) + Dr. Nakamura (CA) studying overlapping white shark populations. Shared workspace created. Weaviate semantic similarity: 94%.</div><div class="mp-time">10:43 AM</div></div>
+              </div>
+              <div class="mp-foot">
+                <input class="mp-input" id="mp-input" placeholder="Send a message…" onkeydown="if(event.key==='Enter')sendMpMsg()">
+                <div class="mp-send" onclick="sendMpMsg()">Send</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="conn-panel">
+              <div class="cp-hd"><div class="cp-ttl">Active Connections</div><div class="cp-sub">Neo4j graph-matched</div></div>
+              <div class="ci cm"><div class="ci-type">Research Match</div><div class="ci-txt">Dr. Chen (FL) + Dr. Nakamura (CA) — <strong>white shark migration</strong></div><div class="ci-act">→ Open workspace</div></div>
+              <div class="ci cp2"><div class="ci-type">Active Project</div><div class="ci-txt"><strong>Cross-Basin Coral Study</strong> — 4 orgs · 6 datasets</div><div class="ci-act">→ View dashboard</div></div>
+              <div class="ci cq"><div class="ci-type">Pending Request</div><div class="ci-txt">Dr. Torres — <strong>Sonoran reptile corridors</strong></div><div class="ci-act">→ Review &amp; approve</div></div>
+              <div class="ci cm"><div class="ci-type">Research Match</div><div class="ci-txt">Prairie Inst. + Great Plains — <strong>bison corridor</strong> · 94% overlap</div><div class="ci-act">→ Open workspace</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ INTELLIGENCE ─ -->
+      <div class="plat-page" id="pp-predict" style="overflow-y:auto">
+        <div class="alert-bar ar"><span>🚨</span><span><strong>Critical —</strong> Sonoran water temp +2.8°C above 30-yr baseline · Isolation Forest flagged · 91% confidence · AZ Game &amp; Fish notified</span></div>
+        <div class="pred-grid">
+          <div class="pc"><div class="pc-hd"><span class="pc-ttl">Coral Bleaching Risk · Gulf of Mexico</span><span class="conf ch2">91% conf</span></div><div class="pc-body"><div class="pm-lbl">Bleaching probability — 30 days</div><div class="pm-track"><div class="pm-fill" id="pb1" style="width:0%;background:linear-gradient(90deg,#F59E0B,#EF4444)"></div></div><div class="pm-val up">78% probability · LSTM model</div><div class="sigs"><div class="sig-hd">Driving signals (Prophet decomposition)</div><div class="sig"><span class="sn">Sea surface temp</span><span class="sv up">+2.1°C</span></div><div class="sig"><span class="sn">UV index anomaly</span><span class="sv up">+34%</span></div><div class="sig"><span class="sn">Ocean acidity (pH)</span><span class="sv up">−0.04</span></div></div></div></div>
+          <div class="pc"><div class="pc-hd"><span class="pc-ttl">Deforestation Risk · Sonoran Desert</span><span class="conf cm">74% conf</span></div><div class="pc-body"><div class="pm-lbl">Projected canopy loss — 6 months</div><div class="pm-track"><div class="pm-fill" id="pb2" style="width:0%;background:var(--amber)"></div></div><div class="pm-val wn">34% decline · Transformer model</div><div class="sigs"><div class="sig-hd">Driving signals</div><div class="sig"><span class="sn">NDVI satellite index</span><span class="sv up">−0.12</span></div><div class="sig"><span class="sn">Precipitation 90-day</span><span class="sv up">−28%</span></div><div class="sig"><span class="sn">Wildfire risk index</span><span class="sv wn">Elevated</span></div></div></div></div>
+          <div class="pc"><div class="pc-hd"><span class="pc-ttl">Shark Population · Atlantic Corridor</span><span class="conf ch2">88% conf</span></div><div class="pc-body"><div class="pm-lbl">Population forecast — 12 months</div><div class="pm-track"><div class="pm-fill" id="pb3" style="width:0%;background:linear-gradient(90deg,#15803D,#22C55E)"></div></div><div class="pm-val dn">+12% recovery · Facebook Prophet</div><div class="sigs"><div class="sig-hd">Driving signals</div><div class="sig"><span class="sn">Tagged migration returns</span><span class="sv dn">+18%</span></div><div class="sig"><span class="sn">Prey abundance index</span><span class="sv dn">+9%</span></div><div class="sig"><span class="sn">Fishing pressure</span><span class="sv dn">−22%</span></div></div></div></div>
+          <div class="pc"><div class="pc-hd"><span class="pc-ttl">Great Lakes Water Quality</span><span class="conf cl">61% conf</span></div><div class="pc-body"><div class="pm-lbl">Algal bloom probability — 60 days</div><div class="pm-track"><div class="pm-fill" id="pb4" style="width:0%;background:linear-gradient(90deg,#3B82F6,#F59E0B)"></div></div><div class="pm-val" style="color:var(--blue)">55% — monitoring · cross-correlation</div><div class="sigs"><div class="sig-hd">Driving signals</div><div class="sig"><span class="sn">Phosphorus runoff</span><span class="sv up">+14%</span></div><div class="sig"><span class="sn">Temp stratification</span><span class="sv wn">Forming</span></div><div class="sig"><span class="sn">Wind mixing index</span><span class="sv wn">Low</span></div></div></div></div>
+        </div>
+        <div class="card"><div class="ch"><span class="ct">Real-Time Anomaly Feed</span><span class="tag tg">Isolation Forest · LIVE</span></div>
+          <div style="padding:11px;display:flex;flex-direction:column;gap:7px">
+            <div class="anom crit"><span style="font-size:.95rem">🚨</span><div style="flex:1"><div class="at">Critical · Water · Sonoran AZ</div><div class="atitle">Temp Spike — +2.8°C above 30-yr baseline</div><div class="adesc">3 stations confirmed. AZ Game &amp; Fish notified. Prediction models updating.</div></div><div class="atime">4 min ago</div></div>
+            <div class="anom warn"><span style="font-size:.95rem">⚠️</span><div style="flex:1"><div class="at">Warning · Species · Gulf Coast</div><div class="atitle">Dolphin Count Drop — 23% below average</div><div class="adesc">Red tide correlation detected. NOAA cross-correlated dataset flagged.</div></div><div class="atime">31 min ago</div></div>
+            <div class="anom warn"><span style="font-size:.95rem">⚠️</span><div style="flex:1"><div class="at">Warning · Seismic · Pacific NW</div><div class="atitle">Microseismic Cluster — Cascade Range</div><div class="adesc">14 micro-events M&lt;2.0 in 6-hr window. USGS feed correlated. Precursor pattern flagged.</div></div><div class="atime">1 hr ago</div></div>
+            <div class="anom info"><span style="font-size:.95rem">ℹ️</span><div style="flex:1"><div class="at">Info · Vegetation · Great Plains</div><div class="atitle">NDVI Surge — 18% above seasonal norm</div><div class="adesc">Possible prairie recovery signal. Prediction published — indexed in Discovery layer.</div></div><div class="atime">2 hr ago</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─ PERMISSIONS & AUDIT ─ -->
+      <div class="plat-page" id="pp-permissions" style="overflow-y:auto">
+        <div style="background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:10px 13px;margin-bottom:14px;font-size:.75rem;color:var(--text2);line-height:1.6">
+          <strong style="color:var(--green)">Permission Architecture:</strong> Every grant is immutable — timestamped, tied to the specific dataset, and attributed to the authorizing user. This creates a full audit trail for FedRAMP compliance and dispute resolution. Permissions are set by the submitting organization at the dataset level — not by Zytherion globally.
+        </div>
+        <div class="g2">
+          <div>
+            <div style="font-size:.8rem;font-weight:700;color:#fff;margin-bottom:8px">Immutable Audit Log</div>
+            <div class="card"><div class="cp" style="padding:0">
+              <table class="audit-table" style="width:100%">
+                <tr><th>Hash</th><th>Event</th><th>Dataset</th><th>User</th><th>Time</th></tr>
+                <tr><td>a3f9...c2d1</td><td style="color:var(--green)">GRANT PUBLIC</td><td style="color:#fff;font-family:normal">Sonoran Reptile Survey</td><td>d.hayes@azgfd.gov</td><td>14:28:03</td></tr>
+                <tr><td>b7e2...f8a3</td><td style="color:var(--blue)">GRANT RESTRICTED</td><td style="color:#fff;font-family:normal">Shark GPS Tracks</td><td>s.chen@fmi.edu</td><td>14:22:17</td></tr>
+                <tr><td>c1d4...9e7b</td><td style="color:var(--amber)">ACCESS READ</td><td style="color:#fff;font-family:normal">Gulf SST Dataset</td><td>api_partner_noaa</td><td>14:19:44</td></tr>
+                <tr><td>d8f5...2c6a</td><td style="color:var(--green)">GRANT PUBLIC</td><td style="color:#fff;font-family:normal">Prairie NDVI 2026</td><td>j.okafor@prairie.org</td><td>14:11:29</td></tr>
+                <tr><td>e2a1...4b8d</td><td style="color:var(--red)">REVOKE ACCESS</td><td style="color:#fff;font-family:normal">Private Camera Traps</td><td>admin@zytherion.com</td><td>13:58:11</td></tr>
+              </table>
+            </div></div>
+          </div>
+          <div>
+            <div style="font-size:.8rem;font-weight:700;color:#fff;margin-bottom:8px">Field-Level Permission Controls</div>
+            <div class="card"><div class="cp" style="padding:0">
+              <div class="perm-row"><div><div class="perm-field">GPS Coordinates</div><div class="perm-type">location · endangered species</div></div><div class="perm-badge pb-priv">PRIVATE</div></div>
+              <div class="perm-row"><div><div class="perm-field">Behavioral Observations</div><div class="perm-type">text · species behavior</div></div><div class="perm-badge pb-pub">PUBLIC</div></div>
+              <div class="perm-row"><div><div class="perm-field">Population Counts</div><div class="perm-type">numeric · census data</div></div><div class="perm-badge pb-pub">PUBLIC</div></div>
+              <div class="perm-row"><div><div class="perm-field">Researcher Contacts</div><div class="perm-type">PII · email / phone</div></div><div class="perm-badge pb-priv">PRIVATE</div></div>
+              <div class="perm-row"><div><div class="perm-field">Satellite Imagery</div><div class="perm-type">media · GeoTIFF</div></div><div class="perm-badge pb-rest">RESTRICTED</div></div>
+              <div class="perm-row"><div><div class="perm-field">Ecosystem Health Index</div><div class="perm-type">derived · calculated score</div></div><div class="perm-badge pb-pub">PUBLIC</div></div>
+            </div></div>
+          </div>
+        </div>
+        <div style="font-size:.8rem;font-weight:700;color:#fff;margin:12px 0 8px">Data Quality Scores</div>
+        <div class="card"><div class="cp" style="padding:0">
+          <div class="qual-row"><div class="qual-name">Sonoran Desert Reptile Survey Q2 2026</div><div class="qual-track"><div class="qual-fill qf-hi" style="width:97%"></div></div><div class="qual-score">97/100</div></div>
+          <div class="qual-row"><div class="qual-name">Gulf Coast SST — NOAA Merge</div><div class="qual-track"><div class="qual-fill qf-hi" style="width:94%"></div></div><div class="qual-score">94/100</div></div>
+          <div class="qual-row"><div class="qual-name">Amazon Deforestation — INPA 2026</div><div class="qual-track"><div class="qual-fill qf-hi" style="width:88%"></div></div><div class="qual-score">88/100</div></div>
+          <div class="qual-row"><div class="qual-name">Prairie Grassland NDVI 2010–2026</div><div class="qual-track"><div class="qual-fill qf-md" style="width:71%"></div></div><div class="qual-score">71/100</div></div>
+          <div class="qual-row"><div class="qual-name">Cascade Range Microseismic — Partial</div><div class="qual-track"><div class="qual-fill qf-lo" style="width:44%"></div></div><div class="qual-score">44/100</div></div>
+        </div></div>
+      </div>
+
+      <!-- ─ TECH STACK ─ -->
+      <div class="plat-page" id="pp-techstack" style="overflow-y:auto">
+        <div style="margin-bottom:12px;font-size:.8rem;color:var(--text2);line-height:1.7">Full 8-layer backend architecture powering the Digital Nervous System. All infrastructure runs serverless-first on GCP — no idle servers, scales to zero overnight, auto-scales to thousands of concurrent safari viewers instantly.</div>
+        <div class="card"><div class="cp" style="padding:0">
+          <table class="tech-table" style="width:100%">
+            <tr><th>Layer</th><th>Technology</th><th>Role</th></tr>
+            <tr><td class="layer-badge">L1 · Ingest</td><td>Apache Kafka<span class="new-badge">CORE</span></td><td style="color:var(--text2)">Message broker — zero-loss queueing, seconds to dashboard</td></tr>
+            <tr><td class="layer-badge">L2 · Process</td><td>Apache Flink</td><td style="color:var(--text2)">Stream processor — normalize, classify, permission-route, anomaly detect</td></tr>
+            <tr><td class="layer-badge">L3 · Storage</td><td>TimescaleDB<span class="new-badge">NEW</span></td><td style="color:var(--text2)">Time-series DB — sensor readings, satellite telemetry, drone GPS tracks</td></tr>
+            <tr><td class="layer-badge">L3 · Storage</td><td>PostgreSQL + PostGIS<span class="new-badge">NEW</span></td><td style="color:var(--text2)">Relational DB — accounts, permissions, metadata + geospatial indexing</td></tr>
+            <tr><td class="layer-badge">L3 · Storage</td><td>Neo4j</td><td style="color:var(--text2)">Graph DB — collaboration network, researcher matching, 2-hop discovery</td></tr>
+            <tr><td class="layer-badge">L3 · Storage</td><td>Weaviate</td><td style="color:var(--text2)">Vector DB — semantic search powering public Discovery layer</td></tr>
+            <tr><td class="layer-badge">L3 · Storage</td><td>Google Cloud Storage</td><td style="color:var(--text2)">Object storage — satellite imagery, drone video, PDFs, CSVs</td></tr>
+            <tr><td class="layer-badge">L3 · Storage</td><td>Redis</td><td style="color:var(--text2)">Cache — dashboard data served instantly, auto-invalidated by stream processor</td></tr>
+            <tr><td class="layer-badge">L4 · API</td><td>GraphQL + WebSockets + REST v1<span class="new-badge">NEW</span></td><td style="color:var(--text2)">API gateway — frontend requests exact data shape; WS for live dashboard push</td></tr>
+            <tr><td class="layer-badge">L5 · Discovery</td><td>Weaviate semantic search</td><td style="color:var(--text2)">Public Discovery — understands meaning, not just keywords</td></tr>
+            <tr><td class="layer-badge">L5 · Discovery</td><td>Offline sync (CRDT)<span class="new-badge">NEW</span></td><td style="color:var(--text2)">CouchDB/PouchDB pattern — conflict-free field researcher sync</td></tr>
+            <tr><td class="layer-badge">L5 · Discovery</td><td>WebRTC + CDN<span class="new-badge">NEW</span></td><td style="color:var(--text2)">Live drone/safari video — bypasses warehouse for sub-second latency</td></tr>
+            <tr><td class="layer-badge">L6 · Intelligence</td><td>Google Vertex AI<span class="new-badge">NEW</span></td><td style="color:var(--text2)">ML training + serving — prediction models with versioning + explainability</td></tr>
+            <tr><td class="layer-badge">L6 · Intelligence</td><td>LSTM + Transformer + Prophet</td><td style="color:var(--text2)">Forecasting — ecosystem health, species trends, deforestation trajectories</td></tr>
+            <tr><td class="layer-badge">L6 · Intelligence</td><td>Isolation Forest</td><td style="color:var(--text2)">Anomaly detection — runs inline in stream processor, fires in seconds</td></tr>
+            <tr><td class="layer-badge">L7 · Collab</td><td>Neo4j + ORCID<span class="new-badge">NEW</span></td><td style="color:var(--text2)">Scientific network — researcher identity verification + graph traversal matching</td></tr>
+            <tr><td class="layer-badge">L8 · Infra</td><td>Google Cloud Run / Lambda</td><td style="color:var(--text2)">Serverless compute — scales to zero, auto-scales to thousands concurrent</td></tr>
+            <tr><td class="layer-badge">L8 · Infra</td><td>Multi-region GCP</td><td style="color:var(--text2)">DR &lt;60s RTO — US + EU failover · FedRAMP-compatible · AES-256 + TLS 1.3</td></tr>
+            <tr><td class="layer-badge">L8 · Infra</td><td>NASA SpaceCube (pending)</td><td style="color:var(--text2)">Edge computing on satellite — compresses imagery before downlink</td></tr>
+          </table>
+        </div></div>
+      </div>
+
+      <!-- ─ COST ─ -->
+      <div class="plat-page" id="pp-cost" style="overflow-y:auto">
+        <div class="cost-total"><div class="ct-lbl">Monthly Infrastructure Cost — MVP (Pre-100K Users)</div><div class="ct-val">$430 — $1,220</div><div class="ct-sub">GCP serverless · scales with usage · no idle servers · no upfront purchase</div></div>
+        <div class="cost-grid">
+          <div class="cost-card"><div class="cost-service">Kafka / Cloud Pub/Sub (message broker)</div><div class="cost-range">$30 – $80/mo</div><div class="cost-detail">per million messages ingested</div></div>
+          <div class="cost-card"><div class="cost-service">Cloud Run (serverless compute)</div><div class="cost-range">$40 – $120/mo</div><div class="cost-detail">API + processing jobs · auto-scales to zero</div></div>
+          <div class="cost-card"><div class="cost-service">Cloud SQL — PostgreSQL + PostGIS</div><div class="cost-range">$50 – $150/mo</div><div class="cost-detail">relational + geospatial · shared tier MVP</div></div>
+          <div class="cost-card"><div class="cost-service">TimescaleDB (time-series)</div><div class="cost-range">$30 – $80/mo</div><div class="cost-detail">sensor readings + satellite telemetry</div></div>
+          <div class="cost-card"><div class="cost-service">Google Cloud Storage (objects)</div><div class="cost-range">$20 – $60/mo</div><div class="cost-detail">satellite imagery, drone video, CSVs</div></div>
+          <div class="cost-card"><div class="cost-service">Weaviate (vector search)</div><div class="cost-range">$50 – $150/mo</div><div class="cost-detail">semantic Discovery layer · managed</div></div>
+          <div class="cost-card"><div class="cost-service">Neo4j (graph DB)</div><div class="cost-range">$65 – $200/mo</div><div class="cost-detail">collaboration network · Aura managed</div></div>
+          <div class="cost-card"><div class="cost-service">Redis (cache)</div><div class="cost-range">$15 – $40/mo</div><div class="cost-detail">dashboard hot data · auto-invalidated</div></div>
+          <div class="cost-card"><div class="cost-service">Vertex AI (ML inference)</div><div class="cost-range">$60 – $200/mo</div><div class="cost-detail">prediction serving · model versioning</div></div>
+          <div class="cost-card"><div class="cost-service">CDN + WebRTC (drone/safari video)</div><div class="cost-range">$70 – $140/mo</div><div class="cost-detail">Cloudflare Stream · live edge delivery</div></div>
+        </div>
+        <div class="card"><div class="ch"><span class="ct">Cost vs Scale: Serverless vs Traditional Servers</span></div><div class="cp"><canvas id="c-cost" height="120"></canvas></div></div>
+        <div style="margin-top:10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:12px;font-size:.75rem;color:var(--text2);line-height:1.7">
+          <strong style="color:var(--green)">Why serverless matters:</strong> A traditional server stack for this architecture would require $3,000–$6,000/month in dedicated infrastructure before a single user signs up. GCP serverless scales to near-zero when idle overnight, and auto-scales to thousands of concurrent safari viewers instantly with no pre-provisioning. This makes the $25,000 capital ask viable — you're not buying hardware, you're buying engineering time to build the software.
+        </div>
+      </div>
+    </div><!-- /plat-main -->
+  </div><!-- /plat-layout -->
+</div><!-- /s-platform -->
+
+<!-- MODAL — SUBMIT DATASET -->
+<div class="ov" id="modal">
+  <div class="modal">
+    <div class="m-hd"><div class="m-ttl">Submit Dataset</div><div class="m-x" onclick="closeModal()">✕</div></div>
+    <div class="m-bd">
+      <div class="fld"><div class="flbl">Organization</div><input class="finput" value="Arizona Game &amp; Fish Department" readonly></div>
+      <div class="fld"><div class="flbl">Dataset Title</div><input class="finput" id="ds-title" placeholder="e.g. Sonoran Desert Reptile Survey Q2 2026"></div>
+      <div class="fld"><div class="flbl">Ecosystem Type</div><select class="finput"><option>Desert &amp; Arid Lands</option><option>Marine &amp; Coastal</option><option>Freshwater &amp; Wetlands</option><option>Forest &amp; Woodland</option><option>Coral Reef</option><option>Grassland &amp; Prairie</option></select></div>
+      <div class="fld"><div class="flbl">Species (optional)</div><input class="finput" placeholder="e.g. Gopherus agassizii, Gila monster"></div>
+      <div class="fld"><div class="flbl">Permission Level</div>
+        <div class="prow">
+          <div class="pbtn sp" onclick="setPerm(this,'sp')">🌍 Public</div>
+          <div class="pbtn" onclick="setPerm(this,'sr')">🔒 Restricted</div>
+          <div class="pbtn" onclick="setPerm(this,'sv')">🔐 Private</div>
+        </div>
+        <div class="pdesc" id="pdesc">Publicly discoverable and indexed in platform search. Flows automatically to Discovery layer — no manual review required.</div>
+      </div>
+      <div class="fld"><div class="flbl">Upload Files</div>
+        <div class="dropz" onclick="fakeUp()">
+          <div class="drop-ico">📁</div>
+          <div class="drop-txt">Drop files here or <span>browse</span></div>
+          <div class="drop-fmt">CSV · JSON · GeoJSON · Shapefile · PDF · Images</div>
+        </div>
+        <div class="up-st" id="upst"></div>
+      </div>
+      <div class="qual-note">✓ Schema validation runs automatically on upload. Data quality score (0–100) assigned by the stream processor. Score published with dataset in the discovery layer.</div>
+    </div>
+    <div class="m-ft">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-g" onclick="doSub()">Submit to Platform</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ── STARS ─────────────────────────────────────────────
+const cv=document.getElementById('stars'),cx=cv.getContext('2d');
+let stars=[];
+function initS(){cv.width=innerWidth;cv.height=innerHeight;stars=Array.from({length:220},()=>({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*1.5+.3,o:Math.random(),s:Math.random()*.007+.002}))}
+function drawS(){cx.clearRect(0,0,cv.width,cv.height);stars.forEach(s=>{s.o+=s.s;if(s.o>1||s.o<0)s.s*=-1;s.x-=s.r*.04;if(s.x<-2)s.x=cv.width+2;cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fillStyle=`rgba(255,255,255,${s.o*.65})`;cx.fill()});requestAnimationFrame(drawS)}
+window.addEventListener('resize',initS);initS();drawS();
+
+// ── SCREEN ROUTING ──────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='s-platform')setTimeout(()=>{initCharts();animBars();renderFeed();renderR();renderD();initTrackChart()},80);
+}
+function showAbout(){
+  const a=document.getElementById('about-section'),c=document.getElementById('contact-section');
+  c.style.display='none';a.style.display=a.style.display==='none'?'block':'none';
+  if(a.style.display!=='none')a.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function showContact(){
+  const a=document.getElementById('about-section'),c=document.getElementById('contact-section');
+  a.style.display='none';c.style.display=c.style.display==='none'?'block':'none';
+  if(c.style.display!=='none')c.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ── AI CAROUSEL ────────────────────────────────────────
+const AIS=[
+  {id:'FA',name:'Forest AI',desc:'Monitor deforestation and forest health.',sub:'Specialized in forest ecology & deforestation monitoring'},
+  {id:'MA',name:'Marine AI',desc:'Track ocean health and marine species.',sub:'Specialized in ocean health & marine biodiversity'},
+  {id:'RA',name:'Research AI',desc:'Connect and accelerate scientific research.',sub:'Specialized in research discovery & data synthesis'},
+  {id:'WA',name:'Wildlife AI',desc:'Monitor endangered species and habitats.',sub:'Specialized in wildlife tracking & habitat analysis'},
+  {id:'EA',name:'Education AI',desc:'Nature intelligence for curious minds.',sub:'Specialized in environmental education & citizen science'},
+  {id:'NA',name:'Nature AI',desc:'Immersive nature intelligence for everyone.',sub:'Specialized in broad ecosystem intelligence'},
+];
+let cPos=0,activeAI=0;
+function slide(d){
+  cPos=Math.max(0,Math.min(AIS.length-3,cPos+d));
+  document.getElementById('ctrack').style.transform=`translateX(-${cPos*210}px)`;
+}
+function selectAI(i){
+  activeAI=i;const ai=AIS[i];
+  document.querySelectorAll('.ai-card').forEach((c,j)=>c.classList.toggle('active',j===i));
+  document.getElementById('ai-active-name').textContent=ai.name;
+  document.getElementById('ai-active-desc').textContent=ai.desc;
+  document.getElementById('nav-av').textContent=ai.id;
+  document.getElementById('nav-name').textContent=ai.name;
+  document.getElementById('chat-av').textContent=ai.id;
+  document.getElementById('cb-av').textContent=ai.id;
+  document.getElementById('chat-name').textContent=ai.name;
+  document.getElementById('chat-sub').textContent=ai.sub;
+}
+
+// ── DNS DISCOVERY ──────────────────────────────────────
+function setBg(el,url,ico){
+  document.querySelectorAll('.disc-tag').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('disc-bg').style.backgroundImage=`url('${url}')`;
+}
+function dtab(el){document.querySelectorAll('.disc-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active')}
+function quickSrch(q){document.getElementById('disc-in').value=q;doSearch()}
+function doSearch(){
+  const q=document.getElementById('disc-in').value||'Nature';
+  document.getElementById('srch-term').textContent=q;
+  document.getElementById('qi-name').textContent=q;
+  const paa=[`What is the most biodiverse ${q}?`,`How does climate change affect ${q}?`,`Which species are endangered in ${q}?`,`What are the latest conservation efforts for ${q}?`];
+  const doms=['biovance.zytherion.com','nature.org','noaa.gov','usgs.gov','epa.gov','iucn.org','wwf.org','nationalgeographic.com'];
+  let html=`<div class="paa-box"><div class="paa-title">People also ask</div>${paa.map(p=>`<div class="paa-item">${p} <span>›</span></div>`).join('')}</div>`;
+  doms.forEach((d,i)=>{html+=`<div class="ri"><div class="ri-dom"><div class="ri-ico">🌿</div>${d} · Today</div><div class="ri-title">${q} — Research &amp; Conservation Data ${i+1}</div><div class="ri-snip">A comprehensive ${q.toLowerCase()} dataset covering species distribution, habitat health, and environmental metrics — contributed by verified organizations within the Zytherion Biovance platform and indexed in real-time.</div><div class="ri-acts"><span class="ri-act">About this result</span> · <span class="ri-act">Share</span> · <span class="ri-act">Cached</span></div></div>`;});
+  document.getElementById('results-list').innerHTML=html;
+  const dr=document.getElementById('disc-results');dr.classList.add('show');dr.style.display='flex';
+}
+
+// ── AI CHAT ────────────────────────────────────────────
+const RESPS=[
+  `Based on the <strong>Zytherion live data streams</strong>, here's what I'm seeing right now:\n\n<strong>Amazon Deforestation — Current:</strong>\n· Canopy loss rate this quarter: 847 km² tracked via Landsat-9\n· NDVI anomaly detected in 3 sectors — flagged by Isolation Forest\n· 34% projected decline over 6 months (74% model confidence)\n\n<strong>Positive signals:</strong>\n· Reforestation programs in 2 buffer zones show +18% canopy recovery\n· 3 new enforcement zones correlated with 22% reduction in clearing\n\nShall I pull the researcher dataset from INPA Brazil — they have 2,341 related records on the platform?`,
+  `<strong>Forest Health Predictions — 6-Month Outlook:</strong>\n\nRunning LSTM + Prophet models against the platform time-series...\n\n· <strong>Sonoran Desert:</strong> 34% canopy decline risk · Elevated wildfire index · Precipitation −28% from baseline\n· <strong>Pacific NW:</strong> Stable · Old-growth corridors holding · USFS Region 6 data current\n· <strong>Amazon:</strong> Critical watch zone · NDVI −0.12 · Deforestation pressure elevated\n\n<strong>Prediction outputs are indexed:</strong> These forecasts are now published back into the Discovery layer as new data — other researchers can cite and build on them in real time.\n\nWant me to generate the full confidence intervals and uncertainty ranges?`,
+  `<strong>Researcher Connections Found — Neo4j Graph:</strong>\n\nThe platform detected overlapping research across 6 profiles:\n\n· <strong>Dr. Sarah Chen</strong> (Florida Marine Institute) — 97% match · shark migration + Atlantic data\n· <strong>Dr. Kenji Nakamura</strong> (Monterey Bay) — 94% match · Pacific pelagics\n· <strong>Dr. Amara Torres</strong> (UNAM) — 89% match · Sonoran species corridors\n\nWeaviate semantic similarity identified that your forest corridor work intersects Torres' reptile migration patterns — <strong>the connection wasn't obvious from keywords alone</strong>, only from meaning.\n\nI can open a shared Neo4j workspace for any of these. Which pairing looks most valuable?`,
+  `<strong>Active Anomalies — Platform Intelligence Layer:</strong>\n\n🚨 <strong>CRITICAL:</strong> Sonoran water temp +2.8°C · 3 stations · AZ Game &amp; Fish notified · 4 min ago\n⚠️ <strong>WARNING:</strong> Gulf dolphin count −23% · red tide correlation · 31 min ago\n⚠️ <strong>WARNING:</strong> Cascade Range microseismic cluster · 14 events M&lt;2.0 · USGS correlated · 1hr ago\n\nAll anomalies are detected by <strong>Isolation Forest running inline in the Flink stream processor</strong> — alerts fire before data even reaches permanent storage.\n\nEvery anomaly is published as a new data point in the system — other researchers can cite them, and prediction models update automatically when new evidence arrives.`,
+  `<strong>Offline Field Sync — How It Works:</strong>\n\nField researchers use a <strong>local SQLite app</strong> — every observation writes instantly with zero network required. Here's the full flow:\n\n1. Dr. Torres logs 847 jaguar observations over 3 days offline in Sierra Madre\n2. Background sync monitors for any connection — even a 2G satellite phone signal\n3. Chunked transfer uploads incrementally — a dropped connection doesn't restart everything\n4. <strong>CRDT conflict resolution</strong> merges any overlapping records automatically\n5. Backend accepts the sync, routes through Kafka → Flink → TimescaleDB\n6. Dashboard updates within minutes of that connection\n\n<strong>No data is lost. No manual action required from the researcher.</strong>`,
+];
+let rIdx=0;
+function sendMsg(text){
+  const inp=document.getElementById('chat-input');
+  const m=text||inp.value.trim();if(!m)return;
+  inp.value='';
+  const body=document.getElementById('chat-body');
+  body.innerHTML+=`<div class="msg user"><div class="msg-av user">U</div><div class="msg-bubble user">${m}</div></div>`;
+  body.scrollTop=body.scrollHeight;
+  setTimeout(()=>{
+    const resp=RESPS[rIdx%RESPS.length];rIdx++;
+    const d=document.createElement('div');d.className='msg';
+    const avId=AIS[activeAI].id;
+    d.innerHTML=`<div class="msg-av ai">${avId}</div><div class="msg-bubble ai" id="t-msg"></div>`;
+    body.appendChild(d);body.scrollTop=body.scrollHeight;
+    typeText('t-msg',resp.replace(/\n/g,'<br>'),0);
+  },650);
+}
+function typeText(id,html,i){
+  const el=document.getElementById(id);if(!el)return;
+  el.id='t-msg-active';
+  if(i===0)el.innerHTML='<span class="typing-cursor"></span>';
+  if(i<html.length){
+    let skip=1;
+    if(html[i]==='<'){const end=html.indexOf('>',i);if(end>-1)skip=end-i+1;}
+    el.innerHTML=html.substring(0,i+skip)+'<span class="typing-cursor"></span>';
+    document.getElementById('chat-body').scrollTop=99999;
+    setTimeout(()=>typeText(id,html,i+skip),12);
+  } else {el.innerHTML=html;el.id='t-msg'}
+}
+function sendMpMsg(){
+  const inp=document.getElementById('mp-input');const txt=inp.value.trim();if(!txt)return;
+  inp.value='';
+  const body=document.getElementById('mp-body');
+  body.innerHTML+=`<div class="mp-msg"><div class="mp-sender">You</div><div class="mp-txt">${txt}</div><div class="mp-time">just now</div></div>`;
+  body.scrollTop=body.scrollHeight;
+}
+
+// ── PLATFORM DASHBOARD ─────────────────────────────────
+const FEED=[
+  {c:'#22C55E',o:'AZ Game & Fish',d:'Desert tortoise survey — 142 GPS observations uploaded',t:'just now'},
+  {c:'#14B8A6',o:'NOAA Marine',d:'SST satellite pass — Gulf thermal layer updated',t:'1m ago'},
+  {c:'#F59E0B',o:'Desert Research',d:'Soil moisture sensors — 18 stations synced',t:'2m ago'},
+  {c:'#3B82F6',o:'USFS Region 6',d:'Forest canopy LIDAR scan — 2.3 GB processed',t:'4m ago'},
+  {c:'#EF4444',o:'Coral Foundation',d:'Florida Keys bleaching survey — 89 transect records',t:'6m ago'},
+  {c:'#A855F7',o:'Prairie Institute',d:'Bison GPS collar data — 14 animals tracked',t:'8m ago'},
+];
+const EXTRAS=[
+  {c:'#22C55E',o:'BLM California',d:'Desert tortoise head-start — 23 releases logged'},
+  {c:'#3B82F6',o:'NOAA Fisheries',d:'Columbia River salmon — hourly update processed'},
+  {c:'#14B8A6',o:'INPA Brazil',d:'Amazon sector 7-G NDVI update — −3.2% canopy density'},
+  {c:'#EF4444',o:'FL Fish & Wildlife',d:'Red tide bloom boundary — coordinates updated'},
+];
+const DISC_DATA=[
+  {type:'dataset',title:'Sonoran Desert Reptile Population Survey',meta:'142 GPS records · Desert · Arizona',org:'AZ Game & Fish',tags:['GeoJSON','Species'],f:'dataset desert'},
+  {type:'program',title:'Gulf Coast Coral Reef Monitoring Network',meta:'Active · 6 orgs · Open enrollment',org:'NOAA Marine',tags:['Ongoing'],f:'program marine'},
+  {type:'volunteer',title:'Pacific NW Trail Camera Survey',meta:'June–Sept 2026 · Remote OK',org:'USFS Region 6',tags:['Wildlife'],f:'volunteer forest'},
+  {type:'dataset',title:'Great Lakes Water Quality — Q1 2026',meta:'18 stations · Real-time sensors',org:'Freshwater Network',tags:['Sensors'],f:'dataset'},
+  {type:'research',title:'White Shark Migration — Atlantic Cross-Study',meta:'FL + CA + MA · 2024–2026',org:'Marine Bio Consortium',tags:['Sharks'],f:'research marine'},
+  {type:'program',title:'Arizona Pollinator Corridor Restoration',meta:'Grant-funded · 4 counties',org:'AZ Game & Fish',tags:['Desert'],f:'program desert'},
+  {type:'volunteer',title:'Sea Turtle Nesting Monitoring — FL Keys',meta:'May–Aug 2026 · 8 openings',org:'Coral Foundation',tags:['Turtles'],f:'volunteer marine'},
+  {type:'dataset',title:'Prairie Grassland NDVI 2010–2026',meta:'16 years · Landsat-8 · public domain',org:'Prairie Institute',tags:['Satellite'],f:'dataset forest'},
+  {type:'research',title:'Amazon Deforestation — INPA 2026',meta:'2,341 records · bi-weekly update',org:'INPA Brazil',tags:['Forest','NDVI'],f:'research forest'},
+  {type:'dataset',title:'Cascade Range Microseismic Events',meta:'USGS + platform integration',org:'USGS + Freshwater Net',tags:['Seismic'],f:'dataset'},
+];
+const RESEARCHERS=[
+  {n:'Dr. Sarah Chen',i:'Florida Marine Institute',f:'White shark migration · Atlantic tagging · ocean corridor mapping',av:'SC',bg:'#15803D',orcid:'0000-0002-1234-5678',m:97},
+  {n:'Dr. Kenji Nakamura',i:'Monterey Bay Aquarium Research',f:'Pacific pelagics · ocean acidification · cross-hemisphere studies',av:'KN',bg:'#1D4ED8',orcid:'0000-0002-8765-4321',m:94},
+  {n:'Dr. Amara Torres',i:'UNAM — Instituto de Ecología',f:'Sonoran reptile corridors · species displacement · climate migration',av:'AT',bg:'#0D9488',orcid:'0000-0003-4567-8901',m:89},
+  {n:'Dr. James Okafor',i:'NOAA Gulf Coast Science Center',f:'Coral bleaching prediction · reef recovery · thermal stress modeling',av:'JO',bg:'#1D4ED8',orcid:'0000-0001-9876-5432',m:85},
+  {n:'Dr. Lisa Petrov',i:'University of Minnesota — CGDL',f:'Great Lakes water quality · algal bloom forecasting · watershed stress',av:'LP',bg:'#6D28D9',orcid:'0000-0003-2345-6789',m:78},
+];
+let feedPool=[...FEED],fi=0,chartsInited=false,activeChip='all';
+
+function renderFeed(){
+  const el=document.getElementById('feed');
+  if(!el)return;
+  el.innerHTML=feedPool.slice(0,6).map(f=>`<div class="feed-item"><div class="fd-dot" style="background:${f.c}"></div><div style="flex:1"><div class="fd-org">${f.o}</div><div class="fd-desc">${f.d}</div></div><div class="fd-time">${f.t}</div></div>`).join('');
+}
+setInterval(()=>{
+  if(!document.getElementById('s-platform').classList.contains('active'))return;
+  const e={...EXTRAS[fi%EXTRAS.length],t:'just now'};
+  feedPool=[e,...feedPool];
+  feedPool=feedPool.slice(0,7);
+  feedPool.forEach((x,i)=>{x.t=['just now','1m ago','3m ago','5m ago','7m ago','10m ago','14m ago'][i]||'15m ago'});
+  renderFeed();
+  const k1=document.getElementById('k1');if(k1){const v=parseInt(k1.textContent)+Math.floor(Math.random()*3);k1.textContent=v}
+  const k2=document.getElementById('k2');if(k2){const v=parseInt(k2.textContent.replace(',',''))+Math.floor(Math.random()*8+1);k2.textContent=v.toLocaleString()}
+  fi++;
+},4500);
+
+function renderD(f,q){
+  f=f||activeChip;q=q||'';
+  const el=document.getElementById('plat-dgrid');if(!el)return;
+  el.innerHTML=DISC_DATA.filter(d=>(f==='all'||d.f.includes(f))&&(!q||d.title.toLowerCase().includes(q)||d.org.toLowerCase().includes(q))).map(d=>`<div class="rc"><div class="rc-type ${d.type}">${d.type.toUpperCase()}</div><div class="rc-title">${d.title}</div><div class="rc-meta">${d.meta}</div><div class="rc-foot"><span class="rc-org">${d.org}</span><div class="rc-tags">${d.tags.map(t=>`<span class="rc-tag">${t}</span>`).join('')}</div></div></div>`).join('');
+}
+function setC(el,f){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');activeChip=f;const s=document.getElementById('plat-srch');renderD(f,s?s.value.toLowerCase():'')}
+function filterD(q){renderD(activeChip,q.toLowerCase())}
+function renderR(){
+  const el=document.getElementById('rlist');if(!el)return;
+  el.innerHTML=RESEARCHERS.map((r,i)=>`<div class="r-card ${i===0?'sel':''}" onclick="this.parentElement.querySelectorAll('.r-card').forEach(x=>x.classList.remove('sel'));this.classList.add('sel')"><div class="rav" style="background:${r.bg}">${r.av}</div><div style="flex:1"><div class="rname">${r.n}</div><div class="rinst">${r.i}</div><div class="rfocus">${r.f}</div><div class="orcid">ORCID: ${r.orcid}</div></div><div class="mpct">${r.m}% match</div></div>`).join('');
+}
+
+let chartsRef={};
+function initCharts(){
+  if(chartsInited)return;chartsInited=true;
+  Chart.defaults.color='#506B56';Chart.defaults.font.family="'Inter',sans-serif";Chart.defaults.font.size=9;
+  const ig=document.getElementById('c-ingest');
+  if(ig)chartsRef.ingest=new Chart(ig,{type:'line',data:{labels:Array.from({length:24},(_,i)=>i%4===0?`${i}h`:''),datasets:[{data:[120,180,210,160,90,110,200,280,350,290,240,310,380,420,360,300,340,410,470,390,310,360,430,480],fill:true,backgroundColor:'rgba(34,197,94,.07)',borderColor:'#22C55E',borderWidth:1.5,pointRadius:0,tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(42,61,44,.5)'},ticks:{maxTicksLimit:7}},y:{grid:{color:'rgba(42,61,44,.5)'},ticks:{maxTicksLimit:4}}}}});
+  const ec=document.getElementById('c-eco');
+  if(ec)new Chart(ec,{type:'doughnut',data:{labels:['Marine','Desert','Forest','Freshwater','Grassland','Coral'],datasets:[{data:[31,22,18,14,9,6],backgroundColor:['#15803D','#D97706','#16A34A','#0D9488','#22C55E','#DC2626'],borderColor:'#0E1710',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:8,padding:5,font:{size:8}}}}}});
+  const pm=document.getElementById('c-perm');
+  if(pm)new Chart(pm,{type:'doughnut',data:{labels:['Public','Restricted','Private'],datasets:[{data:[74,18,8],backgroundColor:['#22C55E','#F59E0B','#3B82F6'],borderColor:'#0E1710',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:8,padding:5,font:{size:8}}}}}});
+  const co=document.getElementById('c-cost');
+  if(co)new Chart(co,{type:'line',data:{labels:['0','10K','25K','50K','100K','250K','500K'],datasets:[{label:'Serverless (GCP)',data:[200,320,600,980,1800,3800,7200],borderColor:'#22C55E',backgroundColor:'rgba(34,197,94,.06)',fill:true,tension:.4,borderWidth:1.5,pointRadius:3},{label:'Traditional Servers',data:[3500,3700,4200,5000,6500,10000,17000],borderColor:'#EF4444',backgroundColor:'rgba(239,68,68,.05)',fill:true,tension:.3,borderWidth:1.5,pointRadius:3,borderDash:[5,3]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8BAF92',boxWidth:10,font:{size:9}}}},scales:{x:{title:{display:true,text:'Monthly Active Users',color:'#506B56',font:{size:8}},grid:{color:'rgba(42,61,44,.4)'}},y:{title:{display:true,text:'$/month',color:'#506B56',font:{size:8}},grid:{color:'rgba(42,61,44,.4)'},ticks:{callback:v=>'$'+v.toLocaleString()}}}}});
+}
+function initTrackChart(){
+  const el=document.getElementById('c-track');if(!el||el._init)return;el._init=true;
+  const pts=Array.from({length:20},(_,i)=>({x:i,y:30+Math.sin(i*.4)*12+Math.random()*8}));
+  new Chart(el,{type:'line',data:{datasets:[{data:pts,borderColor:'#22C55E',borderWidth:1.5,pointRadius:2,pointBackgroundColor:'#22C55E',tension:.4,fill:false,showLine:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{type:'linear',display:false},y:{display:false}}}});
+}
+function animBars(){
+  [['pb1','78'],['pb2','34'],['pb3','62'],['pb4','55']].forEach(([id,w],i)=>setTimeout(()=>{const el=document.getElementById(id);if(el)el.style.width=w+'%'},i*100));
+}
+function pnav(id,el){
+  document.querySelectorAll('.plat-page').forEach(p=>p.classList.remove('on'));
+  const pg=document.getElementById('pp-'+id);if(pg)pg.classList.add('on');
+  document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+  const titles={
+    dashboard:['Live Dashboard','Real-time data · 38 organizations'],
+    pipeline:['Data Pipeline','Kafka → Flink → Storage → API · seconds to dashboard'],
+    satellite:['Satellite Feeds','NASA · ESA · USGS · NOAA · Planet Labs'],
+    safari:['Live Safari','Drone ZB-04 · Sonoran Desert · WebRTC'],
+    fieldsync:['Field Sync','Offline-first CRDT · 4 devices · 1,247 records queued'],
+    discovery:['Public Discovery','Search conservation data · Weaviate semantic search'],
+    collab:['Collaboration','Neo4j graph network · 3 new researcher matches'],
+    predict:['Intelligence','Vertex AI · Anomaly detection · Forecasting'],
+    permissions:['Permissions & Audit','Immutable log · Field-level controls · Quality scores'],
+    techstack:['Tech Stack','8-layer backend architecture'],
+    cost:['Infrastructure Cost','$430–$1,220/mo · GCP serverless'],
+  };
+  const t=titles[id]||[id,''];
+  document.getElementById('pt-title').textContent=t[0];
+  document.getElementById('pt-sub').textContent=t[1];
+  if(id==='predict')setTimeout(animBars,150);
+  if(id==='discovery'){renderD();renderFeed();}
+  if(id==='collab')renderR();
+  if(id==='safari'){initTrackChart();startSafari();}
+  if(id==='cost')setTimeout(initCharts,100);
+}
+
+// ── SAFARI LIVE UPDATES ──────────────────────────────────
+const SAFARI_SPECIES=['Gila Woodpecker','Cactus Wren','Gila Monster','Greater Roadrunner','Desert Tortoise','Harris Hawk','Gambel Quail','Western Diamondback'];
+let safariInt=null;
+function startSafari(){
+  if(safariInt)clearInterval(safariInt);
+  safariInt=setInterval(()=>{
+    if(!document.getElementById('s-platform').classList.contains('active'))return;
+    document.getElementById('hud-time').textContent=new Date().toLocaleTimeString('en-US',{hour12:false});
+    const sp=SAFARI_SPECIES[Math.floor(Math.random()*SAFARI_SPECIES.length)];
+    document.getElementById('hud-species').textContent='Species: '+sp;
+    const tv=document.getElementById('ss-tagged');if(tv)tv.textContent=parseInt(tv.textContent)+1;
+    const sl=document.getElementById('species-log');
+    if(sl){sl.innerHTML=`<div class="feed-item"><div class="fd-dot" style="background:var(--green)"></div><div style="flex:1"><div class="fd-org">${sp}</div><div class="fd-desc">Visual · GPS locked · ${Math.floor(88+Math.random()*10)}% confidence</div></div><div class="fd-time">just now</div></div>`+sl.innerHTML.split('</div>').slice(0,10).join('</div>')+'</div>';}
+  },3500);
+}
+
+// ── MODAL ──────────────────────────────────────────────
+function openModal(){document.getElementById('modal').classList.add('open')}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function setPerm(el,cls){
+  document.querySelectorAll('.pbtn').forEach(b=>b.className='pbtn');
+  el.classList.add(cls);
+  document.getElementById('pdesc').textContent={
+    sp:'Publicly discoverable — flows automatically to Discovery layer with zero manual review required. Default recommended.',
+    sr:'Only organizations with a signed data-sharing agreement can access. You control who.',
+    sv:'Only your organization and explicitly invited collaborators. Does not appear in any search results.',
+  }[cls];
+}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+function fakeUp(){
+  const s=document.getElementById('upst');s.style.display='block';
+  s.textContent='Uploading…';
+  setTimeout(()=>s.textContent='✓ Schema validated · running quality check…',900);
+  setTimeout(()=>s.textContent='✓ Quality score: 94/100 · ready to submit',1800);
+}
+function doSub(){
+  const s=document.getElementById('upst');s.style.display='block';
+  s.textContent='Submitting to Kafka queue…';
+  setTimeout(()=>s.textContent='✓ Stream processor routing: Flink → TimescaleDB → Discovery',700);
+  setTimeout(()=>{s.textContent='✅ Submitted · dashboard updating · audit log entry created';setTimeout(closeModal,1600)},1500);
+}
+
+// ── INIT ───────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{renderFeed();renderD();renderR()});
+</script>
+</body>
+</html>
