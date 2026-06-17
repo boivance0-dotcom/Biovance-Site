@@ -10,48 +10,48 @@ const Visionsection = () => {
       title: "Collect & Secure Research Data",
       preview: "We gather and protect biodiversity data from scientists and conservation groups, ensuring it stays safe, verified, and accessible for collaboration.",
       expanded: "We gather and protect biodiversity data from scientists and conservation groups, ensuring it stays safe, verified, and accessible for collaboration.",
-      smallImage: "/assets/41308.jpg",
-      heroImage: "/assets/41308.jpg"
+      smallImage: `${import.meta.env.BASE_URL}assets/41308.jpg`,
+      heroImage: `${import.meta.env.BASE_URL}assets/41308.jpg`
     },
     {
       id: 2,
       title: "Organize Environmental Intelligence",
       preview: "Our AI systems structure and tag ecological datasets, transforming complex research into shareable, actionable insights.",
       expanded: "Our AI systems structure and tag ecological datasets, transforming complex research into shareable, actionable insights.",
-      smallImage: "/assets/vibrant-coral-reef-ecosystem.webp",
-      heroImage: "/assets/vibrant-coral-reef-ecosystem.webp"
+      smallImage: `${import.meta.env.BASE_URL}assets/vibrant-coral-reef-ecosystem.webp`,
+      heroImage: `${import.meta.env.BASE_URL}assets/vibrant-coral-reef-ecosystem.webp`
     },
     {
       id: 3,
       title: "Connect Global Conservation Networks",
       preview: "We link researchers, restoration teams, and organizations worldwide, creating one unified network for ecological discovery.",
       expanded: "We link researchers, restoration teams, and organizations worldwide, creating one unified network for ecological discovery.",
-      smallImage: "/assets/27Storms.webp",
-      heroImage: "/assets/27Storms.webp"
+      smallImage: `${import.meta.env.BASE_URL}assets/27Storms.webp`,
+      heroImage: `${import.meta.env.BASE_URL}assets/27Storms.webp`
     },
     {
       id: 4,
       title: "Enable Secure Data Collaboration",
       preview: "Our backend architecture allows organizations to share verified findings without exposing sensitive or private habitat information.",
       expanded: "Our backend architecture allows organizations to share verified findings without exposing sensitive or private habitat information.",
-      smallImage: "/assets/myanmar_tm5_2004349_lrg.jpg",
-      heroImage: "/assets/myanmar_tm5_2004349_lrg.jpg"
+      smallImage: `${import.meta.env.BASE_URL}assets/myanmar_tm5_2004349_lrg.jpg`,
+      heroImage: `${import.meta.env.BASE_URL}assets/myanmar_tm5_2004349_lrg.jpg`
     },
     {
       id: 5,
       title: "Accelerate Real-World Restoration",
       preview: "We empower on-ground projects in regions like Arizona to test, measure, and scale restoration models that protect endangered species.",
       expanded: "We empower on-ground projects in regions like Arizona to test, measure, and scale restoration models that protect endangered species.",
-      smallImage: "/assets/080824_Reforestation-projects-around-the-world-success-stories-and-lessons-learnedVisual-2.webp",
-      heroImage: "/assets/080824_Reforestation-projects-around-the-world-success-stories-and-lessons-learnedVisual-2.webp"
+      smallImage: `${import.meta.env.BASE_URL}assets/080824_Reforestation-projects-around-the-world-success-stories-and-lessons-learnedVisual-2.webp`,
+      heroImage: `${import.meta.env.BASE_URL}assets/080824_Reforestation-projects-around-the-world-success-stories-and-lessons-learnedVisual-2.webp`
     },
     {
       id: 6,
       title: "Build Scalable Environmental Intelligence",
       preview: "By combining AI with ecological data, we’re creating a foundation for global, data-driven conservation — where insights lead to real change.",
       expanded: "By combining AI with ecological data, we’re creating a foundation for global, data-driven conservation — where insights lead to real change.",
-      smallImage: "/assets/rs=w_1200,cg_true (1).webp",
-      heroImage: "/assets/rs=w_1200,cg_true (1).webp"
+      smallImage: `${import.meta.env.BASE_URL}assets/rs=w_1200,cg_true (1).webp`,
+      heroImage: `${import.meta.env.BASE_URL}assets/rs=w_1200,cg_true (1).webp`
     }
   ]
 

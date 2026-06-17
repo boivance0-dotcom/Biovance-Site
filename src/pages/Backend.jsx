@@ -33,7 +33,9 @@ const Backend = () => {
   const recordsByDataset = datasets.slice(0, 7).map((d) => ({ name: (d.title || '').slice(0, 12), records: d.record_count || 0 }))
 
   return (
-    <div className="min-h-screen bg-[#08120c] text-white">
+    <div className="min-h-screen text-white relative" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(34,197,94,0.10), transparent 60%), radial-gradient(ellipse 70% 50% at 100% 100%, rgba(20,184,166,0.08), transparent 55%), linear-gradient(180deg, #071109 0%, #0a1610 45%, #081410 100%)' }}>
+      {/* subtle grid texture */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
       {/* Top bar */}
       <div className="sticky top-0 z-20 bg-[#0c1810]/90 backdrop-blur border-b border-white/10">
         <div className="max-w-7xl mx-auto flex items-center gap-3 px-5 py-3">
@@ -55,7 +57,7 @@ const Backend = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-5 py-6">
+      <div className="relative z-10 max-w-7xl mx-auto px-5 py-6">
         <div className="mb-5">
           <h1 className="text-2xl font-black">Live Dashboard</h1>
           <p className="text-white/50 text-sm">Real-time data from your platform database · Supabase-backed</p>
@@ -162,7 +164,8 @@ const Backend = () => {
 }
 
 const KPI = ({ icon: Icon, accent, label, value }) => (
-  <div className="relative rounded-xl border border-white/10 bg-white/[0.03] p-4 overflow-hidden">
+  <div className="relative rounded-xl border border-white/10 p-4 overflow-hidden shadow-lg" style={{ background: 'linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))' }}>
+    <div className="absolute -top-8 -right-8 w-20 h-20 rounded-full blur-2xl opacity-20" style={{ background: accent }} />
     <div className="absolute bottom-0 inset-x-0 h-0.5" style={{ background: accent }} />
     <Icon className="w-4 h-4 mb-2" style={{ color: accent }} />
     <div className="text-2xl font-extrabold leading-none">{value}</div>
@@ -171,7 +174,7 @@ const KPI = ({ icon: Icon, accent, label, value }) => (
 )
 
 const Card = ({ title, right, children, className = '' }) => (
-  <div className={`rounded-xl border border-white/10 bg-white/[0.02] overflow-hidden ${className}`}>
+  <div className={`rounded-xl border border-white/10 overflow-hidden shadow-lg backdrop-blur-sm ${className}`} style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015))' }}>
     <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10">
       <span className="text-sm font-bold">{title}</span>{right}
     </div>

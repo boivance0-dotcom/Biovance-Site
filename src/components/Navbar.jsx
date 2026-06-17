@@ -76,6 +76,16 @@ const Navbar = () => {
          </li>
          </Link>
 
+         <a href={`${import.meta.env.BASE_URL}ai.html`}>
+         <li className={`text-lg lg:text-xl navbar-btn rounded-full px-3 lg:px-4 py-2 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-lg no-underline ${
+           isAdminPage
+             ? 'text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200'
+             : 'text-white backdrop-blur-sm bg-white/10 border border-white/20 hover:bg-white/20'
+         }`}>
+         AI
+         </li>
+         </a>
+
          <Link to="/waitlist">
          <GlowingButton className={`rounded-full px-3 lg:px-4 py-2 transition-all duration-300 hover:scale-105 hover:shadow-lg ${
            isAdminPage
@@ -152,6 +162,13 @@ const Navbar = () => {
                   : 'text-white hover:bg-white/10'
               }`}>Platform</li>
             </Link>
+            <a href={`${import.meta.env.BASE_URL}ai.html`} onClick={() => setIsOpen(false)}>
+              <li className={`py-3 px-6 transition-colors ${
+                isAdminPage
+                  ? 'text-gray-700 hover:bg-gray-100'
+                  : 'text-white hover:bg-white/10'
+              }`}>AI</li>
+            </a>
             <li className='px-6 py-3'>
               <Link to="/waitlist" onClick={() => setIsOpen(false)}>
                 <GlowingButton className={`w-full rounded-full py-2 transition-all duration-300 hover:scale-105 hover:shadow-lg ${

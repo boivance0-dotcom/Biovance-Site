@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biovance — Forest AI Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;color:#fff;background:#071009;min-height:100vh}
+.fixed-bg{position:fixed;inset:0;background-size:cover;background-position:center;filter:brightness(.55) saturate(1.1);z-index:0}
+.grad-top{position:fixed;inset:0;background:linear-gradient(to bottom,rgba(7,16,9,.7),transparent 30%);z-index:1}
+.grad-bottom{position:fixed;inset:0;background:linear-gradient(to top,rgba(7,16,9,.95),transparent 45%);z-index:1}
+.wrap{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:18px 22px 60px}
+.nav{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+.back{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:.85rem;font-weight:600;padding:8px 16px;border-radius:30px;text-decoration:none;transition:.18s}
+.back:hover{background:rgba(255,255,255,.22);transform:translateX(-2px)}
+.brand{font-weight:800;font-size:1.05rem;text-decoration:none;color:#fff}
+.live{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:.75rem;color:#4ADE80}
+.dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-size:clamp(1.8rem,4.5vw,3rem);font-weight:900;letter-spacing:-.02em}
+.sub{color:rgba(255,255,255,.8);margin-top:6px;max-width:640px}
+.grid{display:grid;gap:18px;grid-template-columns:2fr 1fr;margin-top:26px}
+@media(max-width:880px){.grid{grid-template-columns:1fr}}
+.col{display:grid;gap:18px;align-content:start}
+.card{background:rgba(7,16,12,.65);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(10px);border-radius:16px;padding:18px}
+.card h3{font-size:1rem;font-weight:700;margin-bottom:4px}
+.card .meta{font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:14px}
+.legend{display:flex;gap:14px;font-size:.74rem;color:rgba(255,255,255,.8);margin-bottom:12px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+.map{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.zone{aspect-ratio:1;border-radius:7px;cursor:pointer;transition:.2s;position:relative}
+.zone:hover{transform:scale(1.08);box-shadow:0 0 14px rgba(255,255,255,.3)}
+.stat-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.85rem}
+.stat-row:last-child{border:none}
+.stat-row .v{font-weight:700}
+.threat{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.threat:last-child{border:none}
+.ticon{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:1.1rem;flex-shrink:0}
+.tbody .tt{font-size:.86rem;font-weight:600}
+.tbody .td{font-size:.76rem;color:rgba(255,255,255,.55)}
+.tag{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px;align-self:flex-start;text-transform:uppercase;letter-spacing:.04em}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px}
+.kpi{background:rgba(7,16,12,.6);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;text-align:center}
+.kpi .n{font-size:1.8rem;font-weight:900}
+.kpi .l{font-size:.72rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.ba{position:relative;border-radius:14px;overflow:hidden;height:300px;cursor:ew-resize;user-select:none}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ba .after{clip-path:inset(0 0 0 50%);}
+.ba .handle{position:absolute;top:0;bottom:0;left:50%;width:3px;background:#fff;box-shadow:0 0 10px rgba(0,0,0,.5);z-index:3}
+.ba .handle::after{content:'⇄';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#071009;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:.9rem;font-weight:700}
+.ba .lbl{position:absolute;bottom:10px;font-size:.7rem;font-weight:700;background:rgba(0,0,0,.6);padding:4px 10px;border-radius:20px;z-index:2}
+</style>
+</head>
+<body>
+<div class="fixed-bg" style="background-image:url('https://images.unsplash.com/photo-1511497584788-876760111969?w=1600&q=80')"></div>
+<div class="grad-top"></div><div class="grad-bottom"></div>
+<div class="wrap">
+  <div class="nav">
+    <a class="back" href="../">← Back to Home</a>
+    <a class="brand" href="../">Zytherion Biovance</a>
+    <span class="live"><span class="dot"></span>AI Live</span>
+  </div>
+
+  <h1>Forest AI Dashboard</h1>
+  <p class="sub">Live forest health monitoring, satellite comparisons, and AI-driven threat analysis across managed conservation zones.</p>
+
+  <div class="grid">
+    <div class="col">
+      <div class="card">
+        <h3>Forest Health Map</h3>
+        <div class="meta">36 monitored zones · updated 4 min ago · AI-scored</div>
+        <div class="legend">
+          <span><span class="sw" style="background:#3CB371"></span>Healthy</span>
+          <span><span class="sw" style="background:#F0AD4E"></span>Stressed</span>
+          <span><span class="sw" style="background:#E15241"></span>Critical</span>
+        </div>
+        <div class="map" id="map"></div>
+      </div>
+      <div class="card">
+        <h3>Canopy Health Trend</h3>
+        <div class="meta">NDVI index · last 12 months</div>
+        <canvas id="trend" height="120"></canvas>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <h3>AI Threat Analysis</h3>
+        <div class="meta">Real-time risk detection</div>
+        <div class="threat">
+          <div class="ticon" style="background:rgba(225,82,65,.18)">🔥</div>
+          <div class="tbody"><div class="tt">Wildfire Risk — Sector 7</div><div class="td">Elevated dryness + wind. 82% confidence.</div></div>
+        </div>
+        <div class="threat">
+          <div class="ticon" style="background:rgba(240,173,78,.18)">🪓</div>
+          <div class="tbody"><div class="tt">Deforestation — NW Ridge</div><div class="td">3.2% canopy loss detected this quarter.</div></div>
+        </div>
+        <div class="threat">
+          <div class="ticon" style="background:rgba(60,179,113,.18)">💧</div>
+          <div class="tbody"><div class="tt">Soil Moisture — Stable</div><div class="td">Within healthy range across 28 zones.</div></div>
+        </div>
+        <div class="threat">
+          <div class="ticon" style="background:rgba(99,102,241,.18)">🛰️</div>
+          <div class="tbody"><div class="tt">Next Satellite Pass</div><div class="td">Sentinel-2 · in ~6 hours.</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Zone Stats</h3>
+        <div class="meta">Aggregate AI scoring</div>
+        <div class="stat-row"><span>Healthy zones</span><span class="v" style="color:#3CB371">28</span></div>
+        <div class="stat-row"><span>Stressed zones</span><span class="v" style="color:#F0AD4E">6</span></div>
+        <div class="stat-row"><span>Critical zones</span><span class="v" style="color:#E15241">2</span></div>
+        <div class="stat-row"><span>Avg NDVI</span><span class="v">0.71</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="n" style="color:#3CB371">94%</div><div class="l">Overall Health</div></div>
+    <div class="kpi"><div class="n" style="color:#4ADE80">12.4k</div><div class="l">Hectares Monitored</div></div>
+    <div class="kpi"><div class="n" style="color:#F0AD4E">8</div><div class="l">Active Alerts</div></div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>Before / After — Restoration Progress</h3>
+    <div class="meta">Drag to compare · 2019 vs 2026</div>
+    <div class="ba" id="ba">
+      <img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=1200&q=80" alt="before">
+      <img class="after" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80" alt="after">
+      <div class="lbl" style="left:10px">2019</div>
+      <div class="lbl" style="right:10px">2026</div>
+      <div class="handle" id="handle"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// health map zones
+const map=document.getElementById('map');
+const colors=['#3CB371','#3CB371','#3CB371','#F0AD4E','#3CB371','#3CB371','#3CB371','#E15241','#3CB371','#F0AD4E'];
+for(let i=0;i<36;i++){const z=document.createElement('div');z.className='zone';const r=Math.random();z.style.background=r>0.92?'#E15241':r>0.78?'#F0AD4E':'#3CB371';z.title='Zone '+(i+1);map.appendChild(z);}
+// trend chart
+new Chart(document.getElementById('trend'),{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[{label:'NDVI',data:[.62,.64,.63,.66,.68,.70,.69,.71,.72,.70,.71,.71],borderColor:'#4ADE80',backgroundColor:'rgba(74,222,128,.15)',fill:true,tension:.4,pointRadius:2}]},options:{plugins:{legend:{display:false}},scales:{y:{ticks:{color:'rgba(255,255,255,.5)',font:{size:9}},grid:{color:'rgba(255,255,255,.08)'}},x:{ticks:{color:'rgba(255,255,255,.5)',font:{size:9}},grid:{display:false}}}}});
+// before/after slider
+const ba=document.getElementById('ba'),after=ba.querySelector('.after'),handle=document.getElementById('handle');
+function move(x){const r=ba.getBoundingClientRect();let p=(x-r.left)/r.width*100;p=Math.max(2,Math.min(98,p));after.style.clipPath=`inset(0 0 0 ${p}%)`;handle.style.left=p+'%';}
+let drag=false;
+ba.addEventListener('mousedown',e=>{drag=true;move(e.clientX)});
+window.addEventListener('mousemove',e=>{if(drag)move(e.clientX)});
+window.addEventListener('mouseup',()=>drag=false);
+ba.addEventListener('touchmove',e=>move(e.touches[0].clientX));
+</script>
+</body>
+</html>
