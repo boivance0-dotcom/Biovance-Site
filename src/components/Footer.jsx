@@ -37,10 +37,9 @@ const Footer = () => {
 
             {/* Address */}
             <address className="text-gray-600 text-sm not-italic mb-6">
-              1300 S Litchfield Rd.<br />
-              STE 200A<br />
-              85338 Goodyear<br />
-              Arizona
+              11225 North 28th Drive<br />
+              Suite F110<br />
+              Phoenix, AZ 85029
             </address>
           </motion.div>
 

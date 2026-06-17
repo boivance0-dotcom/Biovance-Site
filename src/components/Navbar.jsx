@@ -56,6 +56,16 @@ const Navbar = () => {
          </li>
          </Link>
 
+         <Link to="/search">
+         <li className={`text-lg lg:text-xl navbar-btn rounded-full px-3 lg:px-4 py-2 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-lg no-underline ${
+           isAdminPage
+             ? 'text-gray-700 bg-gray-100 border border-gray-200 hover:bg-gray-200'
+             : 'text-white backdrop-blur-sm bg-white/10 border border-white/20 hover:bg-white/20'
+         }`}>
+         Search
+         </li>
+         </Link>
+
          <Link to="/backend">
          <li className={`text-lg lg:text-xl navbar-btn rounded-full px-3 lg:px-4 py-2 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-lg no-underline ${
            isAdminPage
@@ -127,6 +137,13 @@ const Navbar = () => {
                   ? 'text-gray-700 hover:bg-gray-100'
                   : 'text-white hover:bg-white/10'
               }`}>Contact</li>
+            </Link>
+            <Link to="/search" onClick={() => setIsOpen(false)}>
+              <li className={`py-3 px-6 transition-colors ${
+                isAdminPage
+                  ? 'text-gray-700 hover:bg-gray-100'
+                  : 'text-white hover:bg-white/10'
+              }`}>Search</li>
             </Link>
             <Link to="/backend" onClick={() => setIsOpen(false)}>
               <li className={`py-3 px-6 transition-colors ${

@@ -18,6 +18,7 @@ import Chatbot from './components/Chatbot'
 import ProtectedRoute from './components/ProtectedRoute'
 import Waitlist from './pages/Waitlist'
 import Contact from './pages/Contact'
+import Search from './pages/Search'
 import Backend from './pages/Backend'
 import { supabase } from './lib/supabase'
 import { initializeDatabase, ensureSupabaseCacheSynced } from './lib/supabaseUtils'
@@ -81,6 +82,7 @@ const App = () => {
         <Route path="/admin/waitlist" element={<ProtectedRoute><AdminWaitlist /></ProtectedRoute>} />
         <Route path="/waitlist" element={<Waitlist />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/search" element={<Search />} />
         <Route path="/backend" element={<Backend />} />
       </Routes>
       <Chatbot />
