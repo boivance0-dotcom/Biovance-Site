@@ -38,7 +38,7 @@ const Home = () => (
       image="/assets/myanmar_tm5_2004349_lrg.jpg"
       url="/"
     />
-    <div className='h-screen bg-cover bg-center relative' style={{backgroundImage: 'url(/assets/myanmar_tm5_2004349_lrg.jpg)', backgroundPosition: 'center bottom'}}>
+    <div className='h-screen bg-cover bg-center relative' style={{backgroundImage: `url(${import.meta.env.BASE_URL}assets/myanmar_tm5_2004349_lrg.jpg)`, backgroundPosition: 'center bottom'}}>
       <Navbar />
       <Hero />
     </div>

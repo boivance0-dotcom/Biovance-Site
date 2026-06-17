@@ -112,7 +112,7 @@ const Waitlist = () => {
           transition={{ type: "spring", stiffness: 100, damping: 30 }}
         >
           <img
-            src="/assets/myanmar_tm5_2004349_lrg.jpg"
+            src={`${import.meta.env.BASE_URL}assets/myanmar_tm5_2004349_lrg.jpg`}
             className='w-full h-full object-cover opacity-15 mix-blend-overlay'
             alt=""
           />

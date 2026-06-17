@@ -5,7 +5,9 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/',
+  // GitHub Pages serves this repo from /Biovance-Site/. If you ever move to a
+  // root domain or Cloudflare Pages, change this back to '/'.
+  base: '/Biovance-Site/',
   server: {
     proxy: {
       '/api': {
