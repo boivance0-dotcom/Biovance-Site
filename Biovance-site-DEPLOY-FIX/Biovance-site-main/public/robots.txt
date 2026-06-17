@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Block admin areas
+Disallow: /admin
+Disallow: /login
+
+# Allow important pages
+Allow: /
+Allow: /updates
+Allow: /waitlist
+Allow: /contact
+Allow: /blogs/
+
+# Sitemap
+Sitemap: https://biovance.ai/sitemap.xml
