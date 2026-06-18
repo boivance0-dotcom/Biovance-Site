@@ -138,7 +138,7 @@ const AboutUs = () => {
               }}
             >
               <img
-                src='/assets/vibrant-coral-reef-ecosystem.webp'
+                src={`${import.meta.env.BASE_URL}assets/vibrant-coral-reef-ecosystem.webp`}
                 alt='Ecological restoration and biodiversity'
                 className='w-full h-auto object-cover'
               />
