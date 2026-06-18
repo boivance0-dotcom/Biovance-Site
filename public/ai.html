@@ -7,80 +7,107 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--green:#22C55E;--accent:#a855f7;--blue:#3b82f6}
+:root{--green:#86C232;--accent:#a855f7}
 body{font-family:'Inter',sans-serif;background:#000;color:#fff;overflow-x:hidden}
-/* starfield */
-.stars{position:fixed;inset:0;z-index:0;background:#000;overflow:hidden}
-.stars::before,.stars::after{content:'';position:absolute;inset:-50%;background-image:radial-gradient(1px 1px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 80px,#fff,transparent),radial-gradient(1px 1px at 160px 120px,rgba(255,255,255,.7),transparent),radial-gradient(2px 2px at 230px 50px,#fff,transparent),radial-gradient(1px 1px at 300px 200px,#fff,transparent),radial-gradient(1px 1px at 380px 90px,rgba(255,255,255,.6),transparent);background-size:400px 300px;animation:drift 120s linear infinite;opacity:.6}
-.stars::after{background-size:550px 420px;animation-duration:200s;opacity:.4}
-@keyframes drift{from{transform:translateY(0)}to{transform:translateY(-300px)}}
-/* real Earth video background (same asset Prism uses) */
 .earth-video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-.earth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:0}
-/* top nav */
+.earth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:0}
 .nav{position:relative;z-index:10;display:flex;align-items:center;gap:14px;padding:14px 20px}
-.ico-btn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;text-decoration:none;cursor:pointer;flex-shrink:0;transition:.18s}
+.ico-btn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff;text-decoration:none;cursor:pointer;flex-shrink:0;transition:.18s;font-size:1.1rem}
 .ico-btn:hover{background:rgba(255,255,255,.15)}
-.fa-badge{width:42px;height:42px;border-radius:12px;background:#111;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;font-weight:800;font-size:.8rem;color:#fff}
-.fa-name{font-weight:700;font-size:1rem;white-space:nowrap}
+.fa-badge{width:42px;height:42px;border-radius:12px;background:#111;border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;font-weight:800;font-size:.8rem;cursor:pointer}
+.fa-name{font-weight:700;font-size:1rem;white-space:nowrap;cursor:pointer}
 .searchbar{flex:1;max-width:560px;display:flex;align-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:30px;padding:4px 4px 4px 18px}
 .searchbar input{flex:1;background:none;border:none;outline:none;color:#fff;font-size:.92rem;font-family:inherit;padding:9px 0}
 .searchbar input::placeholder{color:rgba(255,255,255,.5)}
-.searchbar button{width:38px;height:38px;border-radius:50%;border:none;background:var(--green);color:#fff;cursor:pointer;display:grid;place-items:center;font-size:1rem}
+.searchbar button{width:38px;height:38px;border-radius:50%;border:none;background:#22C55E;color:#fff;cursor:pointer;display:grid;place-items:center;font-size:1rem}
 .pill{font-size:.7rem;font-weight:700;letter-spacing:.05em;padding:6px 12px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}
 .nav-links{display:flex;align-items:center;gap:18px;font-size:.82rem;color:rgba(255,255,255,.8)}
 .nav-links a{color:inherit;text-decoration:none;cursor:pointer}
 .nav-links a:hover{color:#fff}
-@media(max-width:920px){.nav-links,.pill{display:none}}
-/* content */
-.content{position:relative;z-index:5;max-width:1000px;margin:0 auto;padding:30px 22px 60px}
-.hero-title{text-align:center;font-size:clamp(2rem,6vw,4rem);font-weight:900;letter-spacing:-.02em;margin:30px 0 28px;background:linear-gradient(90deg,#cde6ff,#9fd0ff,#cdb6ff);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.92}
-.card-vision{background:rgba(10,14,20,.72);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:30px 28px;max-width:880px;margin:0 auto}
+@media(max-width:960px){.nav-links,.pill{display:none}}
+.content{position:relative;z-index:5;max-width:1040px;margin:0 auto;padding:30px 22px 60px}
+.hero-title{text-align:center;font-size:clamp(2.5rem,7vw,5rem);font-weight:900;letter-spacing:-.03em;line-height:.95;margin:40px 0 30px;background:linear-gradient(135deg,#fff,#eaf2ff,#dbe7ff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 10px 40px rgba(0,0,0,.9)}
+.card-vision{background:rgba(8,12,18,.66);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:30px 28px;max-width:900px;margin:0 auto}
 .card-vision h2{text-align:center;font-size:1.7rem;font-weight:800;margin-bottom:14px}
-.card-vision p{text-align:center;color:rgba(255,255,255,.8);line-height:1.7;max-width:760px;margin:0 auto 24px}
+.card-vision p{text-align:center;color:rgba(255,255,255,.8);line-height:1.7;max-width:780px;margin:0 auto 24px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 @media(max-width:640px){.stats{grid-template-columns:1fr}}
 .stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px;text-align:center}
 .stat .n{font-size:1.5rem;font-weight:800;margin-bottom:3px}
 .stat .l{font-size:.8rem;color:rgba(255,255,255,.55)}
-.btns{display:flex;gap:14px;justify-content:center;margin:28px 0 10px;flex-wrap:wrap}
+.btns{display:flex;gap:14px;justify-content:center;margin:28px 0 6px;flex-wrap:wrap}
 .btn{padding:14px 26px;border-radius:30px;font-weight:700;font-size:.95rem;cursor:pointer;border:none;text-decoration:none;display:inline-block}
 .btn-grad{background:linear-gradient(90deg,#4f46e5,#a855f7);color:#fff}
 .btn-light{background:#f1f1f1;color:#111}
-.btn:hover{opacity:.9;transform:translateY(-1px);transition:.15s}
-/* AI modes */
-.modes-title{text-align:center;font-size:1.5rem;font-weight:800;margin:60px 0 6px}
-.modes-sub{text-align:center;color:rgba(255,255,255,.55);margin-bottom:26px}
-.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-@media(max-width:820px){.modes{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.modes{grid-template-columns:1fr}}
-.mode{background:rgba(12,16,22,.7);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;cursor:pointer;transition:.2s}
-.mode:hover{border-color:rgba(34,197,94,.5);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.4)}
-.mode .ic{font-size:1.6rem;margin-bottom:10px}
-.mode .nm{font-weight:700;font-size:1.02rem;margin-bottom:5px}
-.mode .ds{font-size:.83rem;color:rgba(255,255,255,.55);line-height:1.5}
-.mode .st{display:inline-block;margin-top:10px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:20px}
-.st.active{background:rgba(34,197,94,.15);color:#4ade80}
-.st.beta{background:rgba(59,130,246,.15);color:#60a5fa}
-.st.soon{background:rgba(255,255,255,.08);color:rgba(255,255,255,.5)}
-/* contact */
-.contact{margin-top:70px;display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.btn:hover{opacity:.92;transform:translateY(-1px);transition:.15s}
+/* section headers */
+.sec-title{text-align:center;font-size:1.7rem;font-weight:800;margin:64px 0 6px}
+.sec-sub{text-align:center;color:rgba(255,255,255,.55);margin-bottom:30px}
+/* AI carousel */
+.carousel{display:flex;align-items:center;justify-content:center;gap:16px}
+.arrow{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);color:#fff;cursor:pointer;font-size:1.3rem;flex-shrink:0;transition:.15s}
+.arrow:hover{background:rgba(0,0,0,.6)}
+.cards{display:flex;gap:18px;align-items:center;perspective:1000px}
+.mcard{width:280px;border-radius:14px;padding:18px;backdrop-filter:blur(10px);background:rgba(7,16,12,.62);border:1px solid rgba(255,255,255,.1);box-shadow:0 10px 30px rgba(0,0,0,.6);cursor:pointer;transition:.35s;text-align:left}
+.mcard.center{transform:scale(1.06);z-index:2;border-color:rgba(134,194,50,.4)}
+.mcard.side{opacity:.45;transform:scale(.92)}
+.mcard.selected{border-color:var(--green);box-shadow:0 0 0 2px rgba(134,194,50,.4),0 14px 34px rgba(0,0,0,.6)}
+.mcard .top{display:flex;gap:14px;align-items:flex-start}
+.micon{width:50px;height:50px;border-radius:12px;background:#0B3D2E;display:grid;place-items:center;font-size:1.5rem;flex-shrink:0}
+.mcard h4{font-size:1.1rem;font-weight:700}
+.mcard p{font-size:.85rem;color:rgba(255,255,255,.7);margin-top:5px;line-height:1.45}
+.mstatus{display:flex;align-items:center;gap:7px;margin-top:12px;font-size:.8rem}
+.mdot{width:8px;height:8px;border-radius:50%}
+.dots{display:flex;justify-content:center;gap:8px;margin-top:22px}
+.dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;transition:.3s;border:none;padding:0}
+.dot.on{background:var(--green);width:24px;border-radius:5px}
+@media(max-width:820px){.cards .mcard.side{display:none}}
+/* AI response */
+.ai-panel{max-width:880px;margin:22px auto 0;background:rgba(8,12,18,.85);backdrop-filter:blur(10px);border:1px solid rgba(134,194,50,.3);border-radius:18px;padding:22px 24px;box-shadow:0 18px 50px rgba(0,0,0,.5);display:none}
+.dots-anim span{animation:blink 1.4s infinite both}
+.dots-anim span:nth-child(2){animation-delay:.2s}.dots-anim span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:0}40%{opacity:1}}
+/* About reveal */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:920px;margin:0 auto}
+@media(max-width:760px){.about-grid{grid-template-columns:1fr}}
+.layer{background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px}
+.layer h4{font-weight:700;font-size:1.05rem;margin-bottom:10px;color:#fff}
+.layer ul{list-style:disc;padding-left:20px;color:rgba(255,255,255,.8);font-size:.88rem;line-height:1.6}
+.layer p{color:rgba(255,255,255,.8);font-size:.88rem;line-height:1.6}
+.about-tags{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.atag{padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:600}
+/* dashboard */
+.dash{display:grid;grid-template-columns:2fr 1fr;gap:16px;max-width:980px;margin:0 auto}
+@media(max-width:820px){.dash{grid-template-columns:1fr}}
+.dcard{background:rgba(7,16,12,.66);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px}
+.dcard h3{font-size:1rem;font-weight:700;margin-bottom:4px}
+.dcard .meta{font-size:.76rem;color:rgba(255,255,255,.5);margin-bottom:14px}
+.legend{display:flex;gap:14px;font-size:.74rem;color:rgba(255,255,255,.8);margin-bottom:12px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+.map{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
+.zone{aspect-ratio:1;border-radius:5px;cursor:pointer;transition:.2s}
+.zone:hover{transform:scale(1.12);box-shadow:0 0 12px rgba(255,255,255,.35)}
+.threat{margin-bottom:12px}
+.threat .tt{display:flex;justify-content:space-between;font-size:.88rem;color:rgba(255,255,255,.9)}
+.threat .bar{margin-top:6px;height:8px;border-radius:5px;background:rgba(255,255,255,.1);overflow:hidden}
+.threat .fill{height:100%;border-radius:5px}
+.contact{margin-top:70px;display:grid;grid-template-columns:1fr 1fr;gap:36px;max-width:980px;margin-left:auto;margin-right:auto}
 @media(max-width:760px){.contact{grid-template-columns:1fr}}
 .contact h2{font-size:2rem;font-weight:900;margin-bottom:10px}
 .contact .lead{color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:20px}
 .cbox{background:rgba(10,14,20,.6);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;margin-bottom:14px}
 .cbox .org{font-weight:700;margin-bottom:6px}
 .cbox .line{color:rgba(255,255,255,.65);font-size:.9rem;line-height:1.5}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:6px}
+.field{margin-bottom:14px}.field label{display:block;font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:6px}
 .field input,.field textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px 13px;color:#fff;font-family:inherit;font-size:.9rem;outline:none}
 .field input:focus,.field textarea:focus{border-color:var(--green)}
 .send{padding:11px 24px;border-radius:10px;background:#fff;color:#111;font-weight:700;border:none;cursor:pointer}
-.footer{position:relative;z-index:5;border-top:1px solid rgba(255,255,255,.08);margin-top:50px;padding:26px 22px;display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;max-width:1000px;margin-left:auto;margin-right:auto;color:rgba(255,255,255,.5);font-size:.85rem}
+.footer{position:relative;z-index:5;border-top:1px solid rgba(255,255,255,.08);margin-top:50px;padding:26px 22px;display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;max-width:980px;margin-left:auto;margin-right:auto;color:rgba(255,255,255,.5);font-size:.85rem}
+.hidden{display:none}
 </style>
 </head>
 <body>
-<div class="stars"></div>
 <video class="earth-video" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2400&auto=format&fit=crop">
   <source src="https://raw.githubusercontent.com/varunsingh3545/search-engine/main/84589-585553865.mp4" type="video/mp4">
 </video>
@@ -88,36 +115,32 @@ body{font-family:'Inter',sans-serif;background:#000;color:#fff;overflow-x:hidden
 
 <nav class="nav">
   <a class="ico-btn" id="backHome" href="../" title="Back to main site">←</a>
-  <div class="fa-badge">FA</div>
-  <div class="fa-name">Forest AI</div>
+  <div class="fa-badge" onclick="cycleHeaderMode()" title="Click to switch AI">FA</div>
+  <div class="fa-name" id="headerModeName" onclick="cycleHeaderMode()" title="Click to switch AI">Forest AI</div>
   <div class="searchbar">
-    <input placeholder="Ask your specialized AI anything…" id="q" onkeydown="if(event.key==='Enter')ask()">
+    <input id="q" placeholder="Ask your specialized AI anything…" onkeydown="if(event.key==='Enter')ask()">
     <button onclick="ask()">🔍</button>
   </div>
   <span class="pill">PRIVATE</span>
   <div class="nav-links">
-    <a href="#about">ABOUT US</a>
-    <a href="#contact">CONTACT</a>
+    <a onclick="scrollToId('about')">ABOUT US</a>
+    <a onclick="scrollToId('contact')">CONTACT</a>
   </div>
 </nav>
 
 <div class="content">
   <h1 class="hero-title">New Brain For Healthy Earth</h1>
 
-  <!-- AI response panel (appears when user asks) -->
-  <div id="aiPanel" style="display:none;max-width:880px;margin:0 auto 24px;background:rgba(8,12,18,.85);backdrop-filter:blur(10px);border:1px solid rgba(34,197,94,.25);border-radius:18px;padding:22px 24px;box-shadow:0 18px 50px rgba(0,0,0,.5)">
+  <div id="aiPanel" class="ai-panel">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
       <div class="fa-badge" style="width:34px;height:34px;border-radius:9px;font-size:.7rem">FA</div>
-      <div>
-        <div style="font-weight:700;font-size:.95rem" id="aiModeName">Forest Monitoring AI</div>
-        <div style="font-size:.72rem;color:rgba(255,255,255,.5)" id="aiStatus">Ready</div>
-      </div>
-      <button onclick="closePanel()" style="margin-left:auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer">×</button>
+      <div><div style="font-weight:700;font-size:.95rem" id="aiModeName">Forest Monitoring AI</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.5)" id="aiStatus">Ready</div></div>
+      <button onclick="document.getElementById('aiPanel').style.display='none'" style="margin-left:auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer">×</button>
     </div>
     <div id="aiQuery" style="font-size:.9rem;color:rgba(255,255,255,.6);margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.08)"></div>
     <div id="aiAnswer" style="font-size:.96rem;line-height:1.7;color:rgba(255,255,255,.92)"></div>
   </div>
-
 
   <div class="card-vision">
     <h2>Our Vision</h2>
@@ -128,33 +151,84 @@ body{font-family:'Inter',sans-serif;background:#000;color:#fff;overflow-x:hidden
       <div class="stat"><div class="n" style="color:#c084fc">Real-Time</div><div class="l">Data Processing</div></div>
     </div>
     <div class="btns">
-      <a class="btn btn-grad" href="#modes">Explore Our Technology</a>
-      <a class="btn btn-light" id="searchBtn" href="#" onclick="document.getElementById('q').focus();return false;">Try the AI</a>
+      <a class="btn btn-grad" onclick="toggleTech()">Explore Our Technology</a>
+      <a class="btn btn-light" onclick="document.getElementById('q').focus()">Try the AI</a>
     </div>
   </div>
 
-  <h2 class="modes-title" id="modes">Specialized AI Models</h2>
-  <p class="modes-sub">Choose an intelligence engine tuned to your domain.</p>
-  <div class="modes">
-    <div class="mode" onclick="selectMode('Climate Intelligence','🌍')"><div class="ic">🌍</div><div class="nm">Climate Intelligence</div><div class="ds">Advanced climate modeling and environmental impact analysis.</div><span class="st beta">Beta</span></div>
-    <div class="mode" onclick="selectMode('Forest Monitoring','🌲')"><div class="ic">🌲</div><div class="nm">Forest Monitoring</div><div class="ds">Ecosystem health assessment and conservation strategies.</div><span class="st active">Active</span></div>
-    <div class="mode" onclick="selectMode('Wildlife Analytics','🦅')"><div class="ic">🦅</div><div class="nm">Wildlife Analytics</div><div class="ds">Species tracking and biodiversity conservation insights.</div><span class="st active">Active</span></div>
-    <div class="mode" onclick="selectMode('Energy Systems','⚡')"><div class="ic">⚡</div><div class="nm">Energy Systems</div><div class="ds">Renewable energy optimization and smart grid analysis.</div><span class="st soon">Soon</span></div>
-    <div class="mode" onclick="selectMode('Marine Research','💧')"><div class="ic">💧</div><div class="nm">Marine Research</div><div class="ds">Ocean health monitoring and marine conservation.</div><span class="st beta">Beta</span></div>
-    <div class="mode" onclick="selectMode('ESG Analytics','🌿')"><div class="ic">🌿</div><div class="nm">ESG Analytics</div><div class="ds">Corporate sustainability metrics and environmental compliance.</div><span class="st active">Active</span></div>
+  <!-- AI carousel -->
+  <h2 class="sec-title">Specialized AI Models</h2>
+  <p class="sec-sub">Cycle through engines — click a card or the arrows to switch your AI.</p>
+  <div class="carousel">
+    <button class="arrow" onclick="prevSlide()">‹</button>
+    <div class="cards" id="cards"></div>
+    <button class="arrow" onclick="nextSlide()">›</button>
+  </div>
+  <div class="dots" id="dots"></div>
+
+  <!-- Technology / dashboard (revealed by Explore Our Technology) -->
+  <div id="techSection" class="hidden">
+    <h2 class="sec-title">Forest AI Dashboard</h2>
+    <p class="sec-sub">Live forest health monitoring, satellite comparisons, and AI threat analysis.</p>
+    <div class="dash">
+      <div class="dcard">
+        <h3>Forest Health Map</h3>
+        <div class="meta">64 monitored zones · AI-scored · updated 4 min ago</div>
+        <div class="legend">
+          <span><span class="sw" style="background:#3CB371"></span>Healthy</span>
+          <span><span class="sw" style="background:#F0AD4E"></span>Stressed</span>
+          <span><span class="sw" style="background:#E15241"></span>Critical</span>
+        </div>
+        <div class="map" id="map"></div>
+        <h3 style="margin-top:20px">Canopy Health Trend</h3>
+        <div class="meta">NDVI index · last 12 months</div>
+        <svg id="trend" viewBox="0 0 600 140" style="width:100%;height:130px"></svg>
+      </div>
+      <div class="dcard">
+        <h3>AI Threat Analysis</h3>
+        <div class="meta">Real-time risk detection</div>
+        <div class="threat"><div class="tt"><span>🔥 Wildfire Risk — Sector 7</span><span>82%</span></div><div class="bar"><div class="fill" style="width:82%;background:#E15241"></div></div></div>
+        <div class="threat"><div class="tt"><span>🪓 Deforestation — NW Ridge</span><span>34%</span></div><div class="bar"><div class="fill" style="width:34%;background:#F0AD4E"></div></div></div>
+        <div class="threat"><div class="tt"><span>💧 Soil Moisture — Stable</span><span>healthy</span></div><div class="bar"><div class="fill" style="width:70%;background:#3CB371"></div></div></div>
+        <div class="threat"><div class="tt"><span>🛰️ Next Satellite Pass</span><span>~6h</span></div><div class="bar"><div class="fill" style="width:50%;background:#7cb8ff"></div></div></div>
+        <h3 style="margin-top:18px">Zone Summary</h3>
+        <div class="meta" id="zoneSummary">Healthy 44 · Stressed 14 · Critical 6</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About: public/private layers (revealed by About Us) -->
+  <div id="about">
+    <h2 class="sec-title">Platform Architecture — Dual-Layer Infrastructure</h2>
+    <p class="sec-sub">Search &amp; Discovery Engine for planetary intelligence.</p>
+    <div class="about-grid">
+      <div class="layer">
+        <h4>🌍 Public Layer: Open Conservation Hub</h4>
+        <ul>
+          <li>Data Discovery: Search and explore conservation research, wildlife databases, and environmental studies</li>
+          <li>Educational Resources: Access to scientific findings, habitat maps, species information</li>
+          <li>Citizen Science Portal: Tools for public participation in data collection and monitoring</li>
+          <li>Collaboration Space: Connect researchers, students, and conservation enthusiasts</li>
+        </ul>
+      </div>
+      <div class="layer">
+        <h4>🔒 Private Layer: Secure Research Infrastructure</h4>
+        <p>A protected workspace for sensitive research data and active field projects. Provides secure storage, fine-grained access controls, encrypted collaboration, audit trails, and compliant data sharing across institutions — so teams can move faster without compromising trust or integrity.</p>
+      </div>
+    </div>
+    <div class="about-tags">
+      <span class="atag" style="background:#86C232;color:#000">Open Science</span>
+      <span class="atag" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8)">Responsible AI</span>
+      <span class="atag" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8)">Community</span>
+    </div>
   </div>
 
   <div class="contact" id="contact">
     <div>
       <h2>Contact Us</h2>
       <p class="lead">Have questions, ideas, or want to collaborate? Reach out — we love hearing from researchers, conservationists, and curious minds.</p>
-      <div class="cbox">
-        <div class="org">Zytherion Biovance</div>
-        <div class="line">Digital Nervous System Lab<br>11225 North 28th Drive, Suite F110<br>Phoenix, AZ 85029</div>
-      </div>
-      <div class="cbox">
-        <div class="line">info@zytherionbiovance.com<br>480-490-4120</div>
-      </div>
+      <div class="cbox"><div class="org">Zytherion Biovance</div><div class="line">Digital Nervous System Lab<br>11225 North 28th Drive, Suite F110<br>Phoenix, AZ 85029</div></div>
+      <div class="cbox"><div class="line">info@zytherionbiovance.com<br>480-490-4120</div></div>
     </div>
     <div>
       <div class="field"><label>Name</label><input placeholder="Your name"></div>
@@ -171,127 +245,113 @@ body{font-family:'Inter',sans-serif;background:#000;color:#fff;overflow-x:hidden
 </div>
 
 <script>
-// host-agnostic back-to-home (works at root on Cloudflare and /Biovance-Site/ on GitHub Pages)
 (function(){var home=window.location.pathname.replace(/ai\.html$/,'')||'/';document.getElementById('backHome').setAttribute('href',home);})();
 
-var currentMode = 'Forest Monitoring', currentIcon = '🌲';
-function selectMode(name, icon){
-  currentMode = name; currentIcon = icon;
-  document.getElementById('aiModeName').textContent = name + ' AI';
-  document.getElementById('q').placeholder = 'Ask ' + name + ' anything…';
-  document.getElementById('q').focus();
-  // visual confirm
-  var p = document.getElementById('aiPanel');
-  p.style.display = 'block';
-  document.getElementById('aiQuery').textContent = 'Mode switched to ' + name;
-  document.getElementById('aiAnswer').innerHTML = '<span style="color:rgba(255,255,255,.6)">' + icon + ' ' + name + ' is ready. Ask a question above to begin.</span>';
-  document.getElementById('aiStatus').textContent = 'Ready';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-function closePanel(){ document.getElementById('aiPanel').style.display = 'none'; }
+// ---- AI modes (from Prism source) ----
+var MODES=[
+  {id:'climate',name:'Climate Intelligence',desc:'Advanced climate modeling and environmental impact analysis',icon:'🌍',status:'beta'},
+  {id:'forest',name:'Forest Monitoring',desc:'Ecosystem health assessment and conservation strategies',icon:'🌲',status:'active'},
+  {id:'wildlife',name:'Wildlife Analytics',desc:'Species tracking and biodiversity conservation insights',icon:'🦅',status:'active'},
+  {id:'energy',name:'Energy Systems',desc:'Renewable energy optimization and smart grid analysis',icon:'⚡',status:'soon'},
+  {id:'ocean',name:'Marine Research',desc:'Ocean health monitoring and marine conservation',icon:'💧',status:'beta'},
+  {id:'sustainability',name:'ESG Analytics',desc:'Corporate sustainability metrics and environmental compliance',icon:'🌿',status:'active'}
+];
+var STATUS={active:['#86C232','Active'],beta:['#fbbf24','Beta'],soon:['rgba(255,255,255,.4)','Coming soon']};
+var idx=0, selected='forest';
 
-// knowledge fragments per mode — composed into believable, on-topic answers
-var KB = {
-  'Climate Intelligence': {
-    intro: ['Analyzing climate signals', 'Modeling environmental impact', 'Cross-referencing satellite climate data'],
-    facts: [
-      'Surface temperature anomalies in this region trend about +1.2°C above the 30-year baseline.',
-      'Atmospheric CO₂ concentration continues to influence regional precipitation patterns.',
-      'Seasonal carbon flux models suggest shifting growing-season boundaries.',
-      'Real-time data integration flags elevated drought probability over the next two quarters.'
-    ],
-    close: 'Recommended action: prioritize continuous monitoring and emissions-sensitivity modeling.'
-  },
-  'Forest Monitoring': {
-    intro: ['Assessing canopy health', 'Scanning NDVI vegetation indices', 'Evaluating ecosystem indicators'],
-    facts: [
-      'Canopy density readings place this area in the healthy-to-moderately-stressed range (NDVI ~0.68).',
-      'Deforestation signals are low here, though edge fragmentation warrants watching.',
-      'Soil moisture and species diversity indicators remain within stable conservation thresholds.',
-      'Satellite passes show seasonal regrowth consistent with effective restoration efforts.'
-    ],
-    close: 'Recommended action: maintain monitoring cadence and protect identified high-diversity corridors.'
-  },
-  'Wildlife Analytics': {
-    intro: ['Tracking species movement', 'Analyzing biodiversity records', 'Cross-referencing occurrence data'],
-    facts: [
-      'Observed species richness aligns with expected ranges for this habitat type.',
-      'Migration corridor data suggests stable seasonal movement with minor route shifts.',
-      'Two indicator species show population trends worth continued tracking.',
-      'Habitat connectivity scoring indicates moderately strong linkage between protected zones.'
-    ],
-    close: 'Recommended action: focus tagging and survey resources on the flagged indicator species.'
-  },
-  'Energy Systems': {
-    intro: ['Modeling energy flows', 'Optimizing grid signals', 'Evaluating renewable potential'],
-    facts: [
-      'Solar irradiance and wind-load patterns in this area support strong renewable yield.',
-      'Smart-grid balancing models show capacity for higher distributed-generation uptake.',
-      'Seasonal demand curves suggest storage investment would smooth peak loads.',
-      'Efficiency modeling identifies measurable losses recoverable through grid tuning.'
-    ],
-    close: 'Recommended action: prioritize storage siting and distributed-generation integration. (Note: Energy Systems is in preview.)'
-  },
-  'Marine Research': {
-    intro: ['Monitoring ocean health', 'Analyzing sea-surface data', 'Assessing marine indicators'],
-    facts: [
-      'Sea-surface temperature runs slightly above seasonal average, elevating coral stress risk.',
-      'Chlorophyll and salinity readings indicate generally productive, stable waters.',
-      'Marine biodiversity indicators remain within healthy conservation thresholds.',
-      'Current and thermal-layer data suggest shifting prey distribution worth monitoring.'
-    ],
-    close: 'Recommended action: prioritize reef-stress monitoring and protected marine-area surveillance.'
-  },
-  'ESG Analytics': {
-    intro: ['Compiling sustainability metrics', 'Scoring compliance indicators', 'Evaluating ESG signals'],
-    facts: [
-      'Environmental compliance indicators score within acceptable reporting thresholds.',
-      'Carbon-intensity trends show measurable improvement over the prior reporting period.',
-      'Resource-use efficiency metrics suggest targeted gains in water and waste streams.',
-      'Governance and disclosure completeness rate strongly against sector benchmarks.'
-    ],
-    close: 'Recommended action: focus next-period reporting on the flagged resource-efficiency metrics.'
+function renderCarousel(){
+  var wrap=document.getElementById('cards'); wrap.innerHTML='';
+  for(var i=0;i<3;i++){
+    var m=MODES[(idx+i)%MODES.length];
+    var st=STATUS[m.status];
+    var pos=i===1?'center':'side';
+    var sel=m.id===selected?' selected':'';
+    var c=document.createElement('div');
+    c.className='mcard '+pos+sel;
+    c.onclick=(function(id){return function(){selectMode(id);};})(m.id);
+    c.innerHTML='<div class="top"><div class="micon">'+m.icon+'</div><div><h4>'+m.name+'</h4><p>'+m.desc+'</p>'
+      +'<div class="mstatus"><span class="mdot" style="background:'+st[0]+'"></span><span style="color:'+st[0]+'">'+st[1]+'</span></div></div></div>';
+    wrap.appendChild(c);
   }
-};
-
-function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
-
-function ask(){
-  var q = document.getElementById('q').value.trim();
-  if(!q) return;
-  var kb = KB[currentMode] || KB['Forest Monitoring'];
-  var panel = document.getElementById('aiPanel');
-  panel.style.display = 'block';
-  document.getElementById('aiModeName').textContent = currentMode + ' AI';
-  document.getElementById('aiQuery').textContent = '“' + q + '”';
-  document.getElementById('aiStatus').textContent = 'Thinking…';
-  var ans = document.getElementById('aiAnswer');
-  ans.innerHTML = '<span class="dots">' + pick(kb.intro) + '<span>.</span><span>.</span><span>.</span></span>';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  // simulate processing, then compose an answer
-  setTimeout(function(){
-    document.getElementById('aiStatus').textContent = 'Response';
-    var f1 = pick(kb.facts), f2 = pick(kb.facts.filter(function(x){return x!==f1;}));
-    var html = '<p style="margin-bottom:10px">' + currentIcon + ' Based on your question about <strong>' + escapeHtml(q) + '</strong>, here is what ' + currentMode + ' is seeing:</p>'
-             + '<p style="margin-bottom:8px">• ' + f1 + '</p>'
-             + '<p style="margin-bottom:8px">• ' + f2 + '</p>'
-             + '<p style="margin-top:12px;color:#9be7b3">' + kb.close + '</p>'
-             + '<p style="margin-top:14px;font-size:.78rem;color:rgba(255,255,255,.4)">This is a live demo of the Forest AI interface. Responses illustrate how each specialized model surfaces insights.</p>';
-    typeIn(ans, html);
-  }, 1100 + Math.random()*900);
+  var dwrap=document.getElementById('dots'); dwrap.innerHTML='';
+  MODES.forEach(function(m,i){
+    var d=document.createElement('button');
+    d.className='dot'+(m.id===selected?' on':'');
+    d.onclick=(function(id){return function(){selectMode(id);};})(m.id);
+    dwrap.appendChild(d);
+  });
+}
+function nextSlide(){idx=(idx+1)%MODES.length;renderCarousel();}
+function prevSlide(){idx=(idx-1+MODES.length)%MODES.length;renderCarousel();}
+function selectMode(id){
+  selected=id;
+  var m=MODES.find(function(x){return x.id===id;});
+  // center the selected one
+  idx=(MODES.indexOf(m)-1+MODES.length)%MODES.length;
+  document.getElementById('headerModeName').textContent=m.name.split(' ')[0]+' AI';
+  document.getElementById('aiModeName').textContent=m.name+' AI';
+  document.getElementById('q').placeholder='Ask '+m.name+' anything…';
+  renderCarousel();
+}
+function cycleHeaderMode(){
+  var ci=MODES.findIndex(function(x){return x.id===selected;});
+  selectMode(MODES[(ci+1)%MODES.length].id);
+  document.getElementById('q').focus();
 }
 
-function escapeHtml(s){ return s.replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
+// ---- interactive AI answers ----
+var KB={
+  climate:{intro:['Analyzing climate signals','Modeling environmental impact'],facts:['Surface temperature anomalies trend ~+1.2°C above the 30-year baseline.','Atmospheric CO₂ continues to shift regional precipitation patterns.','Drought probability is elevated over the next two quarters.'],close:'Recommended: continuous monitoring and emissions-sensitivity modeling.'},
+  forest:{intro:['Assessing canopy health','Scanning NDVI vegetation indices'],facts:['Canopy density sits in the healthy-to-moderate range (NDVI ~0.68).','Deforestation signals are low; edge fragmentation worth watching.','Seasonal regrowth is consistent with effective restoration.'],close:'Recommended: maintain monitoring cadence and protect high-diversity corridors.'},
+  wildlife:{intro:['Tracking species movement','Analyzing biodiversity records'],facts:['Species richness aligns with expected ranges for this habitat.','Migration corridors are stable with minor route shifts.','Two indicator species show trends worth continued tracking.'],close:'Recommended: focus survey resources on the flagged indicator species.'},
+  energy:{intro:['Modeling energy flows','Evaluating renewable potential'],facts:['Solar irradiance and wind-load support strong renewable yield.','Grid balancing shows room for more distributed generation.','Storage investment would smooth seasonal peak loads.'],close:'Recommended: prioritize storage siting. (Energy Systems is in preview.)'},
+  ocean:{intro:['Monitoring ocean health','Analyzing sea-surface data'],facts:['Sea-surface temp runs slightly above average, raising coral stress risk.','Chlorophyll and salinity indicate productive, stable waters.','Marine biodiversity indicators remain within healthy thresholds.'],close:'Recommended: prioritize reef-stress monitoring and protected-area surveillance.'},
+  sustainability:{intro:['Compiling sustainability metrics','Scoring compliance indicators'],facts:['Compliance indicators score within reporting thresholds.','Carbon-intensity trends improved over the prior period.','Resource-efficiency gains are available in water and waste streams.'],close:'Recommended: focus next-period reporting on resource-efficiency metrics.'}
+};
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
+function ask(){
+  var q=document.getElementById('q').value.trim(); if(!q)return;
+  var m=MODES.find(function(x){return x.id===selected;});
+  var kb=KB[selected]||KB.forest;
+  var p=document.getElementById('aiPanel'); p.style.display='block';
+  document.getElementById('aiModeName').textContent=m.name+' AI';
+  document.getElementById('aiQuery').textContent='“'+q+'”';
+  document.getElementById('aiStatus').textContent='Thinking…';
+  document.getElementById('aiAnswer').innerHTML='<span class="dots-anim">'+pick(kb.intro)+'<span>.</span><span>.</span><span>.</span></span>';
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(function(){
+    document.getElementById('aiStatus').textContent='Response';
+    var f1=pick(kb.facts),f2=pick(kb.facts.filter(function(x){return x!==f1;}));
+    document.getElementById('aiAnswer').innerHTML=
+      '<p style="margin-bottom:10px">'+m.icon+' Based on your question about <strong>'+esc(q)+'</strong>, here is what '+m.name+' is seeing:</p>'
+      +'<p style="margin-bottom:8px">• '+f1+'</p><p style="margin-bottom:8px">• '+f2+'</p>'
+      +'<p style="margin-top:12px;color:#9be7b3">'+kb.close+'</p>'
+      +'<p style="margin-top:14px;font-size:.78rem;color:rgba(255,255,255,.4)">Live demo of the Forest AI interface — each model surfaces domain-specific insight.</p>';
+  },1000+Math.random()*800);
+}
 
-// simple reveal (not char-by-char to keep it snappy)
-function typeIn(el, html){ el.style.opacity = 0; el.innerHTML = html; requestAnimationFrame(function(){ el.style.transition='opacity .4s'; el.style.opacity = 1; }); }
+// ---- tech reveal + dashboard ----
+function toggleTech(){
+  var t=document.getElementById('techSection');
+  t.classList.toggle('hidden');
+  if(!t.classList.contains('hidden')){ buildDash(); scrollToId('techSection'); }
+}
+function buildDash(){
+  var map=document.getElementById('map'); if(map.childElementCount)return;
+  var h=0,s=0,c=0;
+  for(var i=0;i<64;i++){var r=Math.random(),col;if(r>0.9){col='#E15241';c++;}else if(r>0.72){col='#F0AD4E';s++;}else{col='#3CB371';h++;}var z=document.createElement('div');z.className='zone';z.style.background=col;z.title='Zone '+(i+1);map.appendChild(z);}
+  document.getElementById('zoneSummary').textContent='Healthy '+h+' · Stressed '+s+' · Critical '+c;
+  // trend sparkline
+  var pts=[],N=12,W=600,H=140;for(var i=0;i<N;i++){pts.push([i*(W/(N-1)), H-20-(Math.random()*80+20)]);}
+  var d='M'+pts.map(function(p){return p[0].toFixed(0)+','+p[1].toFixed(0);}).join(' L');
+  var svg=document.getElementById('trend');
+  svg.innerHTML='<polyline fill="none" stroke="#86C232" stroke-width="2.5" points="'+pts.map(function(p){return p[0]+','+p[1];}).join(' ')+'"/>'
+    +pts.map(function(p){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="#86C232"/>';}).join('');
+}
+function scrollToId(id){var e=document.getElementById(id);if(e)e.scrollIntoView({behavior:'smooth'});}
+
+renderCarousel(); selectMode('forest');
 </script>
-<style>
-.dots span{animation:blink 1.4s infinite both}
-.dots span:nth-child(2){animation-delay:.2s}
-.dots span:nth-child(3){animation-delay:.4s}
-@keyframes blink{0%,80%,100%{opacity:0}40%{opacity:1}}
-</style>
 </body>
 </html>
